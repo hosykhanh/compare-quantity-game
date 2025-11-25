@@ -1,0 +1,338 @@
+[
+    {
+        "id": 1,
+        "mode": "side",
+        "left": {
+            "icon": "turtle",
+            "count": 2
+        },
+        "right": {
+            "icon": "turtle",
+            "count": 5
+        },
+        "questionType": "more",
+        "correctSide": "right"
+    },
+    {
+        "id": 2,
+        "mode": "side",
+        "left": {
+            "icon": "turtle",
+            "count": 3
+        },
+        "right": {
+            "icon": "turtle",
+            "count": 7
+        },
+        "questionType": "less",
+        "correctSide": "left"
+    },
+    {
+        "id": 3,
+        "mode": "side",
+        "left": {
+            "icon": "turtle",
+            "count": 1
+        },
+        "right": {
+            "icon": "turtle",
+            "count": 4
+        },
+        "questionType": "more",
+        "correctSide": "right"
+    },
+    {
+        "id": 4,
+        "mode": "side",
+        "left": {
+            "icon": "cat",
+            "count": 1
+        },
+        "right": {
+            "icon": "cat",
+            "count": 4
+        },
+        "questionType": "less",
+        "correctSide": "left"
+    },
+    {
+        "id": 5,
+        "mode": "side",
+        "left": {
+            "icon": "cat",
+            "count": 6
+        },
+        "right": {
+            "icon": "cat",
+            "count": 9
+        },
+        "questionType": "more",
+        "correctSide": "right"
+    },
+    {
+        "id": 6,
+        "mode": "side",
+        "left": {
+            "icon": "cat",
+            "count": 3
+        },
+        "right": {
+            "icon": "cat",
+            "count": 8
+        },
+        "questionType": "less",
+        "correctSide": "left"
+    },
+    {
+        "id": 7,
+        "mode": "side",
+        "left": {
+            "icon": "chicken",
+            "count": 1
+        },
+        "right": {
+            "icon": "chicken",
+            "count": 3
+        },
+        "questionType": "more",
+        "correctSide": "right"
+    },
+    {
+        "id": 8,
+        "mode": "side",
+        "left": {
+            "icon": "chicken",
+            "count": 2
+        },
+        "right": {
+            "icon": "chicken",
+            "count": 5
+        },
+        "questionType": "less",
+        "correctSide": "left"
+    },
+    {
+        "id": 9,
+        "mode": "side",
+        "left": {
+            "icon": "chicken",
+            "count": 9
+        },
+        "right": {
+            "icon": "chicken",
+            "count": 4
+        },
+        "questionType": "less",
+        "correctSide": "right"
+    },
+    {
+        "id": 10,
+        "mode": "side",
+        "left": {
+            "icon": "cow",
+            "count": 6
+        },
+        "right": {
+            "icon": "cow",
+            "count": 2
+        },
+        "questionType": "more",
+        "correctSide": "left"
+    },
+    {
+        "id": 11,
+        "mode": "side",
+        "left": {
+            "icon": "cow",
+            "count": 7
+        },
+        "right": {
+            "icon": "cow",
+            "count": 3
+        },
+        "questionType": "less",
+        "correctSide": "right"
+    },
+    {
+        "id": 12,
+        "mode": "side",
+        "left": {
+            "icon": "cow",
+            "count": 9
+        },
+        "right": {
+            "icon": "cow",
+            "count": 5
+        },
+        "questionType": "more",
+        "correctSide": "left"
+    },
+    {
+        "id": 13,
+        "mode": "side",
+        "left": {
+            "icon": "dog",
+            "count": 3
+        },
+        "right": {
+            "icon": "dog",
+            "count": 1
+        },
+        "questionType": "less",
+        "correctSide": "right"
+    },
+    {
+        "id": 14,
+        "mode": "side",
+        "left": {
+            "icon": "dog",
+            "count": 7
+        },
+        "right": {
+            "icon": "dog",
+            "count": 4
+        },
+        "questionType": "more",
+        "correctSide": "left"
+    },
+    {
+        "id": 15,
+        "mode": "side",
+        "left": {
+            "icon": "dog",
+            "count": 8
+        },
+        "right": {
+            "icon": "dog",
+            "count": 5
+        },
+        "questionType": "less",
+        "correctSide": "right"
+    },
+    {
+        "id": 16,
+        "mode": "side",
+        "left": {
+            "icon": "monkey",
+            "count": 6
+        },
+        "right": {
+            "icon": "monkey",
+            "count": 2
+        },
+        "questionType": "more",
+        "correctSide": "left"
+    },
+    {
+        "id": 17,
+        "mode": "side",
+        "left": {
+            "icon": "monkey",
+            "count": 7
+        },
+        "right": {
+            "icon": "monkey",
+            "count": 3
+        },
+        "questionType": "less",
+        "correctSide": "right"
+    },
+    {
+        "id": 18,
+        "mode": "side",
+        "left": {
+            "icon": "monkey",
+            "count": 4
+        },
+        "right": {
+            "icon": "monkey",
+            "count": 9
+        },
+        "questionType": "less",
+        "correctSide": "left"
+    },
+    {
+        "id": 19,
+        "mode": "side",
+        "left": {
+            "icon": "dolphin",
+            "count": 1
+        },
+        "right": {
+            "icon": "dolphin",
+            "count": 5
+        },
+        "questionType": "more",
+        "correctSide": "right"
+    },
+    {
+        "id": 20,
+        "mode": "side",
+        "left": {
+            "icon": "dolphin",
+            "count": 2
+        },
+        "right": {
+            "icon": "dolphin",
+            "count": 6
+        },
+        "questionType": "less",
+        "correctSide": "left"
+    },
+    {
+        "id": 21,
+        "mode": "side",
+        "left": {
+            "icon": "dolphin",
+            "count": 3
+        },
+        "right": {
+            "icon": "dolphin",
+            "count": 9
+        },
+        "questionType": "more",
+        "correctSide": "right"
+    },
+    {
+        "id": 22,
+        "mode": "side",
+        "left": {
+            "icon": "cat",
+            "count": 2
+        },
+        "right": {
+            "icon": "cat",
+            "count": 7
+        },
+        "questionType": "more",
+        "correctSide": "right"
+    },
+    {
+        "id": 23,
+        "mode": "side",
+        "left": {
+            "icon": "dog",
+            "count": 9
+        },
+        "right": {
+            "icon": "dog",
+            "count": 4
+        },
+        "questionType": "less",
+        "correctSide": "right"
+    },
+    {
+        "id": 24,
+        "mode": "side",
+        "left": {
+            "icon": "chicken",
+            "count": 8
+        },
+        "right": {
+            "icon": "chicken",
+            "count": 3
+        },
+        "questionType": "more",
+        "correctSide": "left"
+    }
+]
