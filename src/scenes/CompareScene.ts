@@ -66,16 +66,16 @@ export class CompareScene extends Phaser.Scene {
     private containerEl!: HTMLElement | null;
 
     private bgByIcon: Record<string, string> = {
-        turtle: '/assets/images/bg/bg_sea.png',
-        dolphin: '/assets/images/bg/bg_sea.png',
+        turtle: '/assets/images/bg/bg_sea.webp',
+        dolphin: '/assets/images/bg/bg_sea.webp',
 
-        cow: '/assets/images/bg/bg_farm.png',
-        chicken: '/assets/images/bg/bg_farm.png',
+        cow: '/assets/images/bg/bg_way.webp',
+        chicken: '/assets/images/bg/bg_farm.webp',
 
-        cat: '/assets/images/bg/bg_home.png',
-        dog: '/assets/images/bg/bg_home.png',
+        cat: '/assets/images/bg/bg_home.webp',
+        dog: '/assets/images/bg/bg_home.webp',
 
-        monkey: '/assets/images/bg/bg_forest.png',
+        monkey: '/assets/images/bg/bg_forest.webp',
     };
 
     constructor() {
@@ -119,13 +119,17 @@ export class CompareScene extends Phaser.Scene {
         ); // panel sai
         this.load.image('result_bg', 'assets/images/ui/result_bg.webp');
 
-        // this.load.image('btn_reset', 'assets/images/ui/btn_reset.png');
-        // this.load.image('btn_next', 'assets/images/ui/btn_next.png');
-
         // ---- ÂM THANH ----
         this.load.audio('sfx-correct', 'assets/audio/sfx/correct.wav');
         this.load.audio('sfx-wrong', 'assets/audio/sfx/wrong.wav');
         this.load.audio('sfx-click', 'assets/audio/sfx/click.wav');
+        this.load.audio(
+            'correct_answer',
+            'assets/audio/sfx/correct_answer.mp3'
+        );
+
+        this.load.audio('prompt_less', 'assets/audio/prompt/prompt_less.mp3');
+        this.load.audio('prompt_more', 'assets/audio/prompt/prompt_more.mp3');
 
         // ---- LEVEL DATA (JSON) ----
         this.load.json('compareLevels', 'assets/data/compareLevels.json');
@@ -161,23 +165,6 @@ export class CompareScene extends Phaser.Scene {
         const barWidth = this.getW() * 0.4;
         const ratio = this.questionBar.height / this.questionBar.width;
         this.questionBar.setDisplaySize(barWidth, barWidth * ratio);
-
-        // // ===== Nút Next (chuyển level) =====
-        // this.nextButton = this.add
-        //     .image(this.pctX(0.9), this.pctY(0.15), 'btn_next')
-        //     .setOrigin(0.5)
-        //     .setScale(0.8)
-        //     .setDepth(10)
-        //     .setInteractive({ useHandCursor: true });
-
-        // this.nextButton.visible = false; // 👉 mặc định ẩn
-
-        // this.nextButton.on('pointerdown', () => {
-        //     // if (this.state !== 'waitingNext') return; // chỉ cho bấm khi đã đúng
-        //     this.sound.play('sfx-click');
-        //     this.nextButton.visible = false;
-        //     this.goToNextLevel();
-        // });
 
         this.createPanels();
 
@@ -226,18 +213,6 @@ export class CompareScene extends Phaser.Scene {
 
         this.containerEl.style.backgroundImage = `url('${url}')`;
     }
-
-    restartLevel() {
-        this.showCurrentLevel();
-    }
-
-    // nextLevel() {
-    //     this.currentLevelIndex++;
-    //     if (this.currentLevelIndex >= this.levels.length) {
-    //         this.currentLevelIndex = 0; // hoặc xử lý kết thúc game
-    //     }
-    //     this.showCurrentLevel();
-    // }
 
     private createPanels() {
         const panelWidth = this.getW() * 0.35;
@@ -302,8 +277,10 @@ export class CompareScene extends Phaser.Scene {
         if (level.mode === 'side') {
             // 1. Cập nhật thanh câu hỏi (ảnh)
             if (level.questionType === 'more') {
+                this.sound.play('prompt_more');
                 this.questionBar.setTexture('question_more');
             } else {
+                this.sound.play('prompt_less');
                 this.questionBar.setTexture('question_less');
             }
         }
@@ -454,14 +431,8 @@ export class CompareScene extends Phaser.Scene {
             // khoá panel, chờ bé bấm Next
             this.leftPanel.disableInteractive();
             this.rightPanel.disableInteractive();
-
-            // this.state = 'waitingNext';
-            // this.nextButton.visible = true; // 👉 chỉ đúng mới hiện Next
         } else {
             this.playWrongFeedback(panel);
-
-            // Sai thì chắc chắn ẩn Next (phòng khi vì lý do gì đó nó đang hiện)
-            // this.nextButton.visible = false;
 
             // Cho bé làm lại cùng câu
             this.time.delayedCall(500, () => {
@@ -474,13 +445,23 @@ export class CompareScene extends Phaser.Scene {
 
     private playCorrectFeedback(panel: Phaser.GameObjects.Image) {
         this.sound.play('sfx-correct', { volume: 0.8 });
+        this.sound.play('correct_answer');
+
+        // lấy danh sách con vật thuộc panel này
+        const animals =
+            panel === this.leftPanel
+                ? this.leftPanelAnimals
+                : this.rightPanelAnimals;
+
+        // targets = panel + tất cả con vật trong panel
+        const targets: Phaser.GameObjects.GameObject[] = [panel, ...animals];
 
         // đổi texture sang panel đúng, giữ nguyên cho đến hết câu
         panel.setTexture('panel_bg_correct');
 
         // hiệu ứng zoom nhẹ cho vui mắt
         this.tweens.add({
-            targets: panel,
+            targets,
             scaleX: panel.scaleX * 1.03,
             scaleY: panel.scaleY * 1.03,
             yoyo: true,
@@ -522,6 +503,7 @@ export class CompareScene extends Phaser.Scene {
     // ========== CHUYỂN LEVEL & KẾT QUẢ ==========
 
     goToNextLevel() {
+        this.sound.play('sfx-click');
         this.currentLevelIndex += 1;
 
         if (this.currentLevelIndex >= this.levels.length) {
@@ -534,73 +516,21 @@ export class CompareScene extends Phaser.Scene {
     private showResultScreen() {
         this.state = 'result';
 
-        // dọn sprite con vật, tắt interactive panel
+        // dọn sprite, tắt tương tác
         this.clearLevelObjects();
 
-        const { width, height } = this.scale;
+        if (this.leftPanel) this.leftPanel.disableInteractive();
+        if (this.rightPanel) this.rightPanel.disableInteractive();
 
-        // Lớp tối phía sau popup, chặn click phía dưới
-        const dimOverlay = this.add
-            .rectangle(width / 2, height / 2, width, height, 0x000000, 0.6)
-            .setDepth(90);
-        this.levelObjects.push(dimOverlay);
-
-        // Background kết quả (ảnh bạn đã thiết kế)
-        const resultBg = this.add
-            .image(width / 2, height / 2, 'result_bg')
-            .setOrigin(0.5, 0.5)
-            .setDepth(100);
-        // nếu cần fit tương đối:
-        // resultBg.setDisplaySize(width * 0.7, height * 0.6);
-
-        this.levelObjects.push(resultBg);
-
-        // Text kết quả
-        const resultText = this.add
-            .text(
-                width / 2,
-                height / 2 - 40,
-                `Con làm đúng ${this.score}/${this.levels.length} câu!`,
-                {
-                    fontSize: '40px',
-                    color: '#ffffff',
-                    fontFamily: 'Arial',
-                    align: 'center',
-                }
-            )
-            .setOrigin(0.5)
-            .setDepth(101);
-        this.levelObjects.push(resultText);
-
-        // Text/nút chơi lại
-        const replayText = this.add
-            .text(width / 2, height / 2 + 40, 'Chạm để chơi lại', {
-                fontSize: '28px',
-                color: '#ffff66',
-                fontFamily: 'Arial',
-            })
-            .setOrigin(0.5)
-            .setDepth(101)
-            .setInteractive({ useHandCursor: true });
-
-        this.levelObjects.push(replayText);
-
-        // Cho phép chạm vào background popup hoặc chữ để chơi lại
-        resultBg.setInteractive({ useHandCursor: true });
-
-        const restart = () => {
-            this.restartGame();
-        };
-
-        resultBg.on('pointerdown', restart);
-        replayText.on('pointerdown', restart);
-
-        // nếu muốn tap vào lớp tối đằng sau cũng restart:
-        // dimOverlay.setInteractive({ useHandCursor: true });
-        // dimOverlay.on('pointerdown', restart);
+        // chuyển sang EndGameScene, truyền điểm + tổng số câu
+        this.scene.start('EndGameScene', {
+            score: this.score,
+            total: this.levels.length,
+        });
     }
 
-    private restartGame() {
+    restartGame() {
+        this.sound.play('sfx-click');
         // random lại 5 level từ pool
         this.levels = this.pickRandomLevels(
             this.allLevels,

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { CompareScene } from './scenes/CompareScene';
+import { EndGameScene } from './scenes/EndGameScene';
 
 declare global {
     interface Window {
@@ -13,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
     height: 720,
     parent: 'game-container',
     backgroundColor: '#ffffff',
-    scene: [CompareScene],
+    scene: [CompareScene, EndGameScene],
     scale: {
         mode: Phaser.Scale.FIT, // Canvas tự fit vào container
         autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -103,7 +104,7 @@ resizeGame();
 updateUIButtonScale();
 
 document.getElementById('btn-reset')?.addEventListener('click', () => {
-    window.compareScene?.restartLevel();
+    window.compareScene?.restartGame();
 });
 
 document.getElementById('btn-next')?.addEventListener('click', () => {
