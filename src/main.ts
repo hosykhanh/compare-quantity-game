@@ -25,7 +25,7 @@ const config: Phaser.Types.Core.GameConfig = {
     },
 };
 
-const game = new Phaser.Game(config);
+new Phaser.Game(config);
 
 // --- Xử lý xoay ngang trên mobile ---
 function resizeGame() {

@@ -239,10 +239,6 @@ export class CompareScene extends Phaser.Scene {
     //     this.showCurrentLevel();
     // }
 
-    update(time: number, delta: number): void {
-        // Sau có thể anim background, bong bóng, v.v.
-    }
-
     private createPanels() {
         const panelWidth = this.getW() * 0.35;
         const panelHeight = this.getH() * 0.75;
@@ -525,7 +521,7 @@ export class CompareScene extends Phaser.Scene {
 
     // ========== CHUYỂN LEVEL & KẾT QUẢ ==========
 
-    private goToNextLevel() {
+    goToNextLevel() {
         this.currentLevelIndex += 1;
 
         if (this.currentLevelIndex >= this.levels.length) {
