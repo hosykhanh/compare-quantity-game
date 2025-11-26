@@ -111,25 +111,95 @@ export class CompareScene extends Phaser.Scene {
         // UI
         this.load.image('question_more', 'assets/images/ui/question_more.webp');
         this.load.image('question_less', 'assets/images/ui/question_less.webp');
-        this.load.image('panel_bg', 'assets/images/ui/panel_bg.png');
-        this.load.image('panel_bg_correct', 'assets/images/ui/panel_bg_ok.png'); // panel đúng
+        this.load.image('panel_bg', 'assets/images/ui/panel_bg.webp');
+        this.load.image(
+            'panel_bg_correct',
+            'assets/images/ui/panel_bg_ok.webp'
+        ); // panel đúng
         this.load.image(
             'panel_bg_wrong',
-            'assets/images/ui/panel_bg_wrong.png'
+            'assets/images/ui/panel_bg_wrong.webp'
         ); // panel sai
         this.load.image('result_bg', 'assets/images/ui/result_bg.webp');
 
         // ---- ÂM THANH ----
-        this.load.audio('sfx-correct', 'assets/audio/sfx/correct.wav');
-        this.load.audio('sfx-wrong', 'assets/audio/sfx/wrong.wav');
-        this.load.audio('sfx-click', 'assets/audio/sfx/click.wav');
+        this.load.audio('sfx-correct', 'assets/audio/sfx/correct.ogg');
+        this.load.audio('sfx-wrong', 'assets/audio/sfx/wrong.ogg');
+        this.load.audio('sfx-click', 'assets/audio/sfx/click.ogg');
         this.load.audio(
             'correct_answer',
-            'assets/audio/sfx/correct_answer.mp3'
+            'assets/audio/sfx/correct_answer.ogg'
         );
 
-        this.load.audio('prompt_less', 'assets/audio/prompt/prompt_less.mp3');
-        this.load.audio('prompt_more', 'assets/audio/prompt/prompt_more.mp3');
+        // cat
+        this.load.audio(
+            'prompt_less_cat',
+            'assets/audio/prompt/prompt_less_cat.ogg'
+        );
+        this.load.audio(
+            'prompt_more_cat',
+            'assets/audio/prompt/prompt_more_cat.ogg'
+        );
+
+        // chicken
+        this.load.audio(
+            'prompt_less_chicken',
+            'assets/audio/prompt/prompt_less_chicken.ogg'
+        );
+        this.load.audio(
+            'prompt_more_chicken',
+            'assets/audio/prompt/prompt_more_chicken.ogg'
+        );
+
+        // cow
+        this.load.audio(
+            'prompt_less_cow',
+            'assets/audio/prompt/prompt_less_cow.ogg'
+        );
+        this.load.audio(
+            'prompt_more_cow',
+            'assets/audio/prompt/prompt_more_cow.ogg'
+        );
+
+        // dog
+        this.load.audio(
+            'prompt_less_dog',
+            'assets/audio/prompt/prompt_less_dog.ogg'
+        );
+        this.load.audio(
+            'prompt_more_dog',
+            'assets/audio/prompt/prompt_more_dog.ogg'
+        );
+
+        // dolphin
+        this.load.audio(
+            'prompt_less_dolphin',
+            'assets/audio/prompt/prompt_less_dolphin.ogg'
+        );
+        this.load.audio(
+            'prompt_more_dolphin',
+            'assets/audio/prompt/prompt_more_dolphin.ogg'
+        );
+
+        // monkey
+        this.load.audio(
+            'prompt_less_monkey',
+            'assets/audio/prompt/prompt_less_monkey.ogg'
+        );
+        this.load.audio(
+            'prompt_more_monkey',
+            'assets/audio/prompt/prompt_more_monkey.ogg'
+        );
+
+        // turtle
+        this.load.audio(
+            'prompt_less_turtle',
+            'assets/audio/prompt/prompt_less_turtle.ogg'
+        );
+        this.load.audio(
+            'prompt_more_turtle',
+            'assets/audio/prompt/prompt_more_turtle.ogg'
+        );
 
         // ---- LEVEL DATA (JSON) ----
         this.load.json('compareLevels', 'assets/data/compareLevels.json');
@@ -236,6 +306,11 @@ export class CompareScene extends Phaser.Scene {
             .setDepth(1);
     }
 
+    private getPromptKey(icon: string, questionType: 'more' | 'less'): string {
+        // icon: cat / dog / cow / ...
+        return `prompt_${questionType}_${icon}`;
+    }
+
     private pickRandomLevels(
         source: CompareLevel[],
         count: number
@@ -273,16 +348,22 @@ export class CompareScene extends Phaser.Scene {
             this.rightPanel.clearTint();
         }
 
-        // 1. Cập nhật câu hỏi
+        // 1. Cập nhật câu hỏi + phát voice theo con vật
         if (level.mode === 'side') {
-            // 1. Cập nhật thanh câu hỏi (ảnh)
-            if (level.questionType === 'more') {
-                this.sound.play('prompt_more');
+            const icon = level.left.icon; // cat / dog / ...
+            const questionType = level.questionType; // 'more' | 'less'
+
+            // đổi ảnh thanh câu hỏi
+            if (questionType === 'more') {
                 this.questionBar.setTexture('question_more');
             } else {
-                this.sound.play('prompt_less');
                 this.questionBar.setTexture('question_less');
             }
+
+            // phát đúng file theo con vật
+            const promptKey = this.getPromptKey(icon, questionType);
+            console.log('[CompareScene] Play prompt:', promptKey);
+            this.sound.play(promptKey);
         }
 
         // 2. Xoá sprite & nút cũ của level trước
@@ -338,8 +419,8 @@ export class CompareScene extends Phaser.Scene {
         if (!texW || !texH) return 1; // fallback, trường hợp texture lỗi
 
         // chừa padding 80% cell
-        const maxW = cellWidth * 0.8;
-        const maxH = cellHeight * 0.8;
+        const maxW = cellWidth * 0.85;
+        const maxH = cellHeight * 0.85;
 
         const scaleX = maxW / texW;
         const scaleY = maxH / texH;
@@ -351,14 +432,13 @@ export class CompareScene extends Phaser.Scene {
         return baseScale;
     }
 
-    // ===== Vẽ con vật trong 1 panel =====
     // ===== Vẽ con vật trong 1 panel, auto scale theo kích thước ô =====
     private drawAnimals(side: BaseSideConfig, panel: Phaser.GameObjects.Image) {
         const panelWidth = panel.displayWidth;
         const panelHeight = panel.displayHeight;
 
-        const paddingX = panelWidth * 0.12;
-        const paddingY = panelHeight * 0.15;
+        const paddingX = panelWidth * 0.05;
+        const paddingY = panelHeight * 0.06;
 
         const usableWidth = panelWidth - paddingX * 2;
         const usableHeight = panelHeight - paddingY * 2;
@@ -369,8 +449,8 @@ export class CompareScene extends Phaser.Scene {
         const cellWidth = usableWidth / cols;
         const cellHeight = usableHeight / rows;
 
-        const spacingX = usableWidth / (cols + 1);
-        const spacingY = usableHeight / (rows + 1);
+        const spacingX = (usableWidth / (cols + 1)) * 1.3;
+        const spacingY = (usableHeight / (rows + 1)) * 1.3;
 
         const left = panel.x - usableWidth / 2;
         const top = panel.y - usableHeight / 2;
@@ -384,8 +464,8 @@ export class CompareScene extends Phaser.Scene {
             const col = i % cols;
             const row = Math.floor(i / cols);
 
-            const x = left + spacingX * (col + 1);
-            const y = top + spacingY * (row + 1);
+            const x = left + spacingX * (col + 0.5);
+            const y = top + spacingY * (row + 0.5);
 
             const sprite = this.add
                 .image(x, y, side.icon)

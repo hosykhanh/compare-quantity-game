@@ -22,7 +22,7 @@
         },
         "right": {
             "icon": "turtle",
-            "count": 7
+            "count": 5
         },
         "questionType": "less",
         "correctSide": "left"
@@ -60,11 +60,11 @@
         "mode": "side",
         "left": {
             "icon": "cat",
-            "count": 6
+            "count": 4
         },
         "right": {
             "icon": "cat",
-            "count": 9
+            "count": 5
         },
         "questionType": "more",
         "correctSide": "right"
@@ -78,7 +78,7 @@
         },
         "right": {
             "icon": "cat",
-            "count": 8
+            "count": 4
         },
         "questionType": "less",
         "correctSide": "left"
@@ -116,7 +116,7 @@
         "mode": "side",
         "left": {
             "icon": "chicken",
-            "count": 9
+            "count": 5
         },
         "right": {
             "icon": "chicken",
@@ -130,7 +130,7 @@
         "mode": "side",
         "left": {
             "icon": "cow",
-            "count": 6
+            "count": 4
         },
         "right": {
             "icon": "cow",
@@ -144,7 +144,7 @@
         "mode": "side",
         "left": {
             "icon": "cow",
-            "count": 7
+            "count": 5
         },
         "right": {
             "icon": "cow",
@@ -158,11 +158,11 @@
         "mode": "side",
         "left": {
             "icon": "cow",
-            "count": 9
+            "count": 5
         },
         "right": {
             "icon": "cow",
-            "count": 5
+            "count": 3
         },
         "questionType": "more",
         "correctSide": "left"
@@ -186,11 +186,11 @@
         "mode": "side",
         "left": {
             "icon": "dog",
-            "count": 7
+            "count": 5
         },
         "right": {
             "icon": "dog",
-            "count": 4
+            "count": 1
         },
         "questionType": "more",
         "correctSide": "left"
@@ -200,11 +200,11 @@
         "mode": "side",
         "left": {
             "icon": "dog",
-            "count": 8
+            "count": 4
         },
         "right": {
             "icon": "dog",
-            "count": 5
+            "count": 3
         },
         "questionType": "less",
         "correctSide": "right"
@@ -214,7 +214,7 @@
         "mode": "side",
         "left": {
             "icon": "monkey",
-            "count": 6
+            "count": 5
         },
         "right": {
             "icon": "monkey",
@@ -228,7 +228,7 @@
         "mode": "side",
         "left": {
             "icon": "monkey",
-            "count": 7
+            "count": 5
         },
         "right": {
             "icon": "monkey",
@@ -246,7 +246,7 @@
         },
         "right": {
             "icon": "monkey",
-            "count": 9
+            "count": 5
         },
         "questionType": "less",
         "correctSide": "left"
@@ -274,7 +274,7 @@
         },
         "right": {
             "icon": "dolphin",
-            "count": 6
+            "count": 4
         },
         "questionType": "less",
         "correctSide": "left"
@@ -288,7 +288,7 @@
         },
         "right": {
             "icon": "dolphin",
-            "count": 9
+            "count": 5
         },
         "questionType": "more",
         "correctSide": "right"
@@ -302,7 +302,7 @@
         },
         "right": {
             "icon": "cat",
-            "count": 7
+            "count": 5
         },
         "questionType": "more",
         "correctSide": "right"
@@ -312,7 +312,7 @@
         "mode": "side",
         "left": {
             "icon": "dog",
-            "count": 9
+            "count": 5
         },
         "right": {
             "icon": "dog",
@@ -326,7 +326,7 @@
         "mode": "side",
         "left": {
             "icon": "chicken",
-            "count": 8
+            "count": 4
         },
         "right": {
             "icon": "chicken",
