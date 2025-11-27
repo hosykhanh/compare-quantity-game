@@ -15,9 +15,7 @@ body {
     justify-content: center;
     align-items: center;
     touch-action: none;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    overflow: hidden;
 }
 
 canvas {
@@ -33,7 +31,24 @@ canvas {
     pointer-events: none; /* không chặn click vào canvas */
 }
 
-/* Đảm bảo canvas nằm trên lớp mờ */
+/* 2 lớp background để cross-fade */
+.bg-layer {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 0.4s ease; /* thời gian fade */
+    pointer-events: none;
+    z-index: 0;
+}
+
+.bg-layer.visible {
+    opacity: 1;
+}
+
+/* Canvas game nằm trên 2 bg */
 #game-container > canvas {
     position: relative;
     z-index: 1;
@@ -59,8 +74,6 @@ canvas {
 /* Các nút UI */
 .ui-btn {
     position: absolute;
-    /* width: 5%; /* chuẩn PC */
-    /* height: auto; */
     z-index: 9999;
     cursor: pointer;
     user-select: none;

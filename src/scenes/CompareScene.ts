@@ -29,10 +29,6 @@ interface OperatorLevel {
 
 type CompareLevel = SideLevel | OperatorLevel;
 
-// ====== State game đơn giản ======
-
-type GameState = 'idle' | 'checking' | 'transition' | 'result';
-
 // ====== CompareScene ======
 
 export class CompareScene extends Phaser.Scene {
@@ -49,7 +45,14 @@ export class CompareScene extends Phaser.Scene {
     private score = 0;
 
     // state
-    private state: GameState = 'idle';
+    // private state: GameState = 'idle';
+    private state:
+        | 'idle'
+        | 'checking'
+        | 'animating'
+        | 'transition'
+        | 'waitingNext'
+        | 'result' = 'idle';
 
     // UI elements tái sử dụng
     private questionBar!: Phaser.GameObjects.Image;
@@ -63,7 +66,9 @@ export class CompareScene extends Phaser.Scene {
     private leftPanelAnimals: Phaser.GameObjects.Image[] = [];
     private rightPanelAnimals: Phaser.GameObjects.Image[] = [];
 
-    private containerEl!: HTMLElement | null;
+    private bgLayerA: HTMLElement | null = null;
+    private bgLayerB: HTMLElement | null = null;
+    private isBgAActive = true;
 
     private bgByIcon: Record<string, string> = {
         turtle: '/assets/images/bg/bg_sea.webp',
@@ -77,6 +82,9 @@ export class CompareScene extends Phaser.Scene {
 
         monkey: '/assets/images/bg/bg_forest.webp',
     };
+
+    private currentPromptVoice?: Phaser.Sound.BaseSound;
+    private currentFeedbackVoice?: Phaser.Sound.BaseSound;
 
     constructor() {
         super('CompareScene');
@@ -95,6 +103,15 @@ export class CompareScene extends Phaser.Scene {
     private pctY(p: number) {
         return this.getH() * p;
     } // p = 0..1
+
+    private stopAllVoices() {
+        if (this.currentPromptVoice && this.currentPromptVoice.isPlaying) {
+            this.currentPromptVoice.stop();
+        }
+        if (this.currentFeedbackVoice && this.currentFeedbackVoice.isPlaying) {
+            this.currentFeedbackVoice.stop();
+        }
+    }
 
     preload() {
         // ---- HÌNH ẢNH ----
@@ -209,7 +226,21 @@ export class CompareScene extends Phaser.Scene {
         // Cho phép html-button gọi vào compareScene qua global
         (window as any).compareScene = this;
 
-        this.containerEl = document.getElementById('game-container');
+        this.bgLayerA = document.getElementById('bg-layer-a');
+        this.bgLayerB = document.getElementById('bg-layer-b');
+
+        // set 1 bg khởi tạo cho vui
+        if (this.bgLayerA) {
+            this.bgLayerA.style.backgroundImage =
+                "url('/assets/images/bg/bg_forest.webp')";
+            this.bgLayerA.classList.add('visible');
+            this.isBgAActive = true;
+        }
+        if (this.bgLayerB) {
+            this.bgLayerB.style.backgroundImage =
+                "url('/assets/images/bg/bg_forest.webp')";
+            this.bgLayerB.classList.remove('visible');
+        }
 
         this.boy = this.add
             .image(this.pctX(0.01), this.pctY(0.9), 'boy')
@@ -276,12 +307,28 @@ export class CompareScene extends Phaser.Scene {
     }
 
     private setBackgroundForLevel(level: CompareLevel) {
-        if (!this.containerEl) return;
+        const icon = level.left.icon;
+        const url = this.bgByIcon[icon] ?? '/assets/images/bg/bg_forest.webp';
 
-        const icon = level.left.icon; // mình dùng icon bên trái làm chuẩn
-        const url = this.bgByIcon[icon] ?? '/assets/images/bg/bg_forest.png';
+        if (!this.bgLayerA || !this.bgLayerB) return;
 
-        this.containerEl.style.backgroundImage = `url('${url}')`;
+        const active = this.isBgAActive ? this.bgLayerA : this.bgLayerB;
+        const hidden = this.isBgAActive ? this.bgLayerB : this.bgLayerA;
+
+        // nếu đang cùng 1 ảnh thì khỏi làm gì cho đỡ tốn
+        const currentBg = active.style.backgroundImage;
+        const targetBg = `url("${url}")`;
+        if (currentBg === targetBg) return;
+
+        // set ảnh mới lên layer đang ẩn
+        hidden.style.backgroundImage = `url('${url}')`;
+
+        // cho layer ẩn fade in, layer đang active fade out
+        hidden.classList.add('visible');
+        active.classList.remove('visible');
+
+        // đảo trạng thái
+        this.isBgAActive = !this.isBgAActive;
     }
 
     private createPanels() {
@@ -304,11 +351,30 @@ export class CompareScene extends Phaser.Scene {
             .setOrigin(0.5)
             .setDisplaySize(panelWidth, panelHeight)
             .setDepth(1);
+
+        // lưu scale gốc để tween intro/outro
+        (this.leftPanel as any).baseScaleX = this.leftPanel.scaleX;
+        (this.leftPanel as any).baseScaleY = this.leftPanel.scaleY;
+        (this.rightPanel as any).baseScaleX = this.rightPanel.scaleX;
+        (this.rightPanel as any).baseScaleY = this.rightPanel.scaleY;
     }
 
     private getPromptKey(icon: string, questionType: 'more' | 'less'): string {
         // icon: cat / dog / cow / ...
         return `prompt_${questionType}_${icon}`;
+    }
+
+    private playPrompt(icon: string, questionType: 'more' | 'less') {
+        const promptKey = this.getPromptKey(icon, questionType);
+
+        // dừng mọi voice đang nói
+        this.stopAllVoices();
+
+        // tạo/nhặt sound cho prompt này
+        const sound = this.sound.get(promptKey) || this.sound.add(promptKey);
+
+        this.currentPromptVoice = sound;
+        sound.play();
     }
 
     private pickRandomLevels(
@@ -330,6 +396,8 @@ export class CompareScene extends Phaser.Scene {
         if (!this.levels.length) return;
 
         const level = this.levels[this.currentLevelIndex];
+
+        this.clearLevelObjects();
 
         // reset attempt
         this.state = 'idle';
@@ -361,13 +429,8 @@ export class CompareScene extends Phaser.Scene {
             }
 
             // phát đúng file theo con vật
-            const promptKey = this.getPromptKey(icon, questionType);
-            console.log('[CompareScene] Play prompt:', promptKey);
-            this.sound.play(promptKey);
+            this.playPrompt(icon, questionType);
         }
-
-        // 2. Xoá sprite & nút cũ của level trước
-        this.clearLevelObjects();
 
         // Vẽ con vật
         this.drawAnimals(level.left, this.leftPanel);
@@ -379,6 +442,8 @@ export class CompareScene extends Phaser.Scene {
 
         this.leftPanel.on('pointerdown', () => this.onSideSelected('left'));
         this.rightPanel.on('pointerdown', () => this.onSideSelected('right'));
+
+        this.animateLevelIntro();
     }
 
     private clearLevelObjects() {
@@ -476,9 +541,86 @@ export class CompareScene extends Phaser.Scene {
             const scale = this.getAnimalScale(side.icon, cellWidth, cellHeight);
             sprite.setScale(scale);
 
+            // lưu scale gốc
+            (sprite as any).baseScaleX = sprite.scaleX;
+            (sprite as any).baseScaleY = sprite.scaleY;
+
             this.levelObjects.push(sprite);
             animalsArray.push(sprite);
         }
+    }
+
+    private animateLevelIntro() {
+        const allTargets: Phaser.GameObjects.Image[] = [
+            this.leftPanel,
+            this.rightPanel,
+            ...this.leftPanelAnimals,
+            ...this.rightPanelAnimals,
+        ];
+
+        allTargets.forEach((obj) => {
+            const anyObj = obj as any;
+            if (anyObj.baseScaleX == null) {
+                anyObj.baseScaleX = obj.scaleX;
+                anyObj.baseScaleY = obj.scaleY;
+            }
+            obj.setScale(anyObj.baseScaleX * 0.75, anyObj.baseScaleY * 0.75);
+        });
+
+        this.state = 'animating';
+
+        this.tweens.add({
+            targets: allTargets,
+            scaleX: (target: any) => target.baseScaleX,
+            scaleY: (target: any) => target.baseScaleY,
+            duration: 600,
+            ease: 'Back.Out',
+            onComplete: () => {
+                this.state = 'idle';
+            },
+        });
+    }
+
+    private animateLevelOutro(onDone: () => void) {
+        const allAnimals = [
+            ...this.leftPanelAnimals,
+            ...this.rightPanelAnimals,
+        ];
+
+        // nếu vì lý do gì đó không có thú thì khỏi tween, chạy thẳng
+        if (allAnimals.length === 0) {
+            onDone();
+            return;
+        }
+
+        this.state = 'transition';
+
+        if (this.leftPanel) this.leftPanel.disableInteractive();
+        if (this.rightPanel) this.rightPanel.disableInteractive();
+
+        this.tweens.add({
+            targets: allAnimals,
+            scaleX: 0,
+            scaleY: 0,
+            duration: 500,
+            ease: 'Back.In',
+            onComplete: () => {
+                // xoá thú cũ
+                allAnimals.forEach((sp) => sp.destroy());
+
+                // loại chúng khỏi levelObjects
+                this.levelObjects = this.levelObjects.filter(
+                    (obj) =>
+                        !allAnimals.includes(obj as Phaser.GameObjects.Image)
+                );
+
+                // reset list thú
+                this.leftPanelAnimals = [];
+                this.rightPanelAnimals = [];
+
+                onDone();
+            },
+        });
     }
 
     // ========== XỬ LÝ TƯƠNG TÁC ==========
@@ -498,6 +640,22 @@ export class CompareScene extends Phaser.Scene {
         this.handleAnswer(isCorrect, target);
     }
 
+    private playCorrectVoice() {
+        // dừng prompt câu hỏi đang nói
+        if (this.currentPromptVoice && this.currentPromptVoice.isPlaying) {
+            this.currentPromptVoice.stop();
+        }
+        if (this.currentFeedbackVoice && this.currentFeedbackVoice.isPlaying) {
+            this.currentFeedbackVoice.stop();
+        }
+
+        const sound =
+            this.sound.get('correct_answer') ||
+            this.sound.add('correct_answer');
+        this.currentFeedbackVoice = sound;
+        sound.play();
+    }
+
     private handleAnswer(
         isCorrect: boolean,
         target: Phaser.GameObjects.GameObject
@@ -507,6 +665,7 @@ export class CompareScene extends Phaser.Scene {
         if (isCorrect) {
             this.score += 1;
             this.playCorrectFeedback(panel);
+            this.playCorrectVoice();
 
             // khoá panel, chờ bé bấm Next
             this.leftPanel.disableInteractive();
@@ -525,7 +684,6 @@ export class CompareScene extends Phaser.Scene {
 
     private playCorrectFeedback(panel: Phaser.GameObjects.Image) {
         this.sound.play('sfx-correct', { volume: 0.8 });
-        this.sound.play('correct_answer');
 
         // lấy danh sách con vật thuộc panel này
         const animals =
@@ -583,14 +741,20 @@ export class CompareScene extends Phaser.Scene {
     // ========== CHUYỂN LEVEL & KẾT QUẢ ==========
 
     goToNextLevel() {
+        this.stopAllVoices();
         this.sound.play('sfx-click');
-        this.currentLevelIndex += 1;
 
-        if (this.currentLevelIndex >= this.levels.length) {
-            this.showResultScreen();
-        } else {
-            this.showCurrentLevel();
-        }
+        const afterShrink = () => {
+            this.currentLevelIndex += 1;
+
+            if (this.currentLevelIndex >= this.levels.length) {
+                this.showResultScreen();
+            } else {
+                this.showCurrentLevel();
+            }
+        };
+
+        this.animateLevelOutro(afterShrink);
     }
 
     private showResultScreen() {
@@ -610,6 +774,7 @@ export class CompareScene extends Phaser.Scene {
     }
 
     restartGame() {
+        this.stopAllVoices();
         this.sound.play('sfx-click');
         // random lại 5 level từ pool
         this.levels = this.pickRandomLevels(

@@ -34,6 +34,8 @@ export class EndGameScene extends Phaser.Scene {
         const w = this.scale.width;
         const h = this.scale.height;
 
+        (this.scene.get('CompareScene') as any)?.stopAllVoices?.();
+
         // Phát âm thanh chúc mừng khi vào màn hình
         this.sound.play('complete');
 
@@ -70,9 +72,16 @@ export class EndGameScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true });
 
         replayBtn.on('pointerdown', () => {
+            // 1. Tắt toàn bộ âm thanh đang chạy (end game + mọi scene khác)
+            this.sound.stopAll();
+
+            const compare = this.scene.get('CompareScene') as any;
+            compare?.stopAllVoices?.();
+
             this.sound.play('sfx_click');
             this.clearDimBackground();
             this.stopConfetti();
+            this.scene.stop('EndGameScene');
             this.scene.start('CompareScene'); // CompareScene sẽ tự random level lại
         });
 
