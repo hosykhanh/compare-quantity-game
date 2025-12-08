@@ -142,8 +142,20 @@ export class CompareScene extends Phaser.Scene {
         this.load.audio('sfx-wrong', 'assets/audio/sfx/wrong.ogg');
         this.load.audio('sfx-click', 'assets/audio/sfx/click.ogg');
         this.load.audio(
-            'correct_answer',
-            'assets/audio/sfx/correct_answer.ogg'
+            'correct_answer_1',
+            'assets/audio/sfx/correct_answer_1.ogg'
+        );
+        this.load.audio(
+            'correct_answer_2',
+            'assets/audio/sfx/correct_answer_2.ogg'
+        );
+        this.load.audio(
+            'correct_answer_3',
+            'assets/audio/sfx/correct_answer_3.ogg'
+        );
+        this.load.audio(
+            'correct_answer_4',
+            'assets/audio/sfx/correct_answer_4.ogg'
         );
         this.load.audio('voice_rotate', 'assets/audio/sfx/rotate.ogg');
 
@@ -639,6 +651,19 @@ export class CompareScene extends Phaser.Scene {
         this.handleAnswer(isCorrect, target);
     }
 
+    playRandomCorrect(sound: Phaser.Sound.BaseSoundManager) {
+        const keys = [
+            'correct_answer_1',
+            'correct_answer_2',
+            'correct_answer_3',
+            'correct_answer_4',
+        ];
+
+        const key = keys[Math.floor(Math.random() * keys.length)];
+        const sfx = sound.get(key) ?? sound.add(key);
+        sfx.play();
+    }
+
     private playCorrectVoice() {
         // dừng prompt câu hỏi đang nói
         if (this.currentPromptVoice && this.currentPromptVoice.isPlaying) {
@@ -648,11 +673,7 @@ export class CompareScene extends Phaser.Scene {
             this.currentFeedbackVoice.stop();
         }
 
-        const sound =
-            this.sound.get('correct_answer') ||
-            this.sound.add('correct_answer');
-        this.currentFeedbackVoice = sound;
-        sound.play();
+        this.playRandomCorrect(this.sound);
     }
 
     private handleAnswer(
