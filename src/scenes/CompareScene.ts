@@ -71,16 +71,15 @@ export class CompareScene extends Phaser.Scene {
     private isBgAActive = true;
 
     private bgByIcon: Record<string, string> = {
-        turtle: '/assets/images/bg/bg_sea.webp',
-        dolphin: '/assets/images/bg/bg_sea.webp',
+        turtle: 'assets/images/bg/bg_sea.webp',
+        dolphin: 'assets/images/bg/bg_sea.webp',
 
-        cow: '/assets/images/bg/bg_way.webp',
-        chicken: '/assets/images/bg/bg_farm.webp',
+        cow: 'assets/images/bg/bg_way.webp',
+        chicken: 'assets/images/bg/bg_farm.webp',
 
-        cat: '/assets/images/bg/bg_home.webp',
-        dog: '/assets/images/bg/bg_home.webp',
-
-        monkey: '/assets/images/bg/bg_forest.webp',
+        cat: 'assets/images/bg/bg_home.webp',
+        dog: 'assets/images/bg/bg_home.webp',
+        monkey: 'assets/images/bg/bg_forest.webp',
     };
 
     private currentPromptVoice?: Phaser.Sound.BaseSound;
@@ -115,7 +114,7 @@ export class CompareScene extends Phaser.Scene {
 
     preload() {
         // ---- HÌNH ẢNH ----
-        this.load.image('boy', '/assets/images/characters/boy.webp');
+        this.load.image('boy', 'assets/images/characters/boy.webp');
 
         this.load.image('turtle', 'assets/images/animals/turtle.webp');
         this.load.image('cat', 'assets/images/animals/cat.webp');
@@ -137,7 +136,6 @@ export class CompareScene extends Phaser.Scene {
             'panel_bg_wrong',
             'assets/images/ui/panel_bg_wrong.webp'
         ); // panel sai
-        this.load.image('result_bg', 'assets/images/ui/result_bg.webp');
 
         // ---- ÂM THANH ----
         this.load.audio('sfx-correct', 'assets/audio/sfx/correct.ogg');
@@ -147,6 +145,7 @@ export class CompareScene extends Phaser.Scene {
             'correct_answer',
             'assets/audio/sfx/correct_answer.ogg'
         );
+        this.load.audio('voice_rotate', 'assets/audio/sfx/rotate.ogg');
 
         // cat
         this.load.audio(
@@ -232,13 +231,13 @@ export class CompareScene extends Phaser.Scene {
         // set 1 bg khởi tạo cho vui
         if (this.bgLayerA) {
             this.bgLayerA.style.backgroundImage =
-                "url('/assets/images/bg/bg_forest.webp')";
+                "url('assets/images/bg/bg_forest.webp')";
             this.bgLayerA.classList.add('visible');
             this.isBgAActive = true;
         }
         if (this.bgLayerB) {
             this.bgLayerB.style.backgroundImage =
-                "url('/assets/images/bg/bg_forest.webp')";
+                "url('assets/images/bg/bg_forest.webp')";
             this.bgLayerB.classList.remove('visible');
         }
 
@@ -308,7 +307,7 @@ export class CompareScene extends Phaser.Scene {
 
     private setBackgroundForLevel(level: CompareLevel) {
         const icon = level.left.icon;
-        const url = this.bgByIcon[icon] ?? '/assets/images/bg/bg_forest.webp';
+        const url = this.bgByIcon[icon] ?? 'assets/images/bg/bg_forest.webp';
 
         if (!this.bgLayerA || !this.bgLayerB) return;
 
@@ -697,6 +696,11 @@ export class CompareScene extends Phaser.Scene {
         // đổi texture sang panel đúng, giữ nguyên cho đến hết câu
         panel.setTexture('panel_bg_correct');
 
+        //tự chuyển sang câu tiếp sau 1 lúc
+        this.time.delayedCall(2000, () => {
+            this.goToNextLevel();
+        });
+
         // hiệu ứng zoom nhẹ cho vui mắt
         this.tweens.add({
             targets,
@@ -742,7 +746,6 @@ export class CompareScene extends Phaser.Scene {
 
     goToNextLevel() {
         this.stopAllVoices();
-        this.sound.play('sfx-click');
 
         const afterShrink = () => {
             this.currentLevelIndex += 1;

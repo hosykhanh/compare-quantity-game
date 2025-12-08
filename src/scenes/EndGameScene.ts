@@ -21,6 +21,7 @@ export class EndGameScene extends Phaser.Scene {
             'banner_congrat',
             'assets/images/ui/banner_congrat.webp'
         );
+        this.load.image('icon', 'assets/images/ui/icon.webp');
         this.load.image('btn_reset', 'assets/images/ui/btn_reset.webp');
         this.load.image('btn_exit', 'assets/images/ui/btn_exit.webp');
 
@@ -58,6 +59,32 @@ export class EndGameScene extends Phaser.Scene {
             .setOrigin(0.5)
             .setDepth(100)
             .setDisplaySize(w * 0.9, h * 0.9); // full màn
+
+        // Icon image at top (outside panel)
+        if (this.textures.exists('icon')) {
+            const icon = this.add.image(w / 2, h / 2 - 150, 'icon');
+            icon.setScale(0.5);
+            icon.setDepth(1005);
+
+            // Animate chicken
+            this.tweens.add({
+                targets: icon,
+                y: icon.y - 10,
+                duration: 800,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut',
+            });
+
+            this.tweens.add({
+                targets: icon,
+                angle: { from: -5, to: 5 },
+                duration: 600,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut',
+            });
+        }
 
         // ==== Các nút ngang dưới banner ====
         const btnScale = Math.min(w, h) / 1280;
@@ -97,6 +124,27 @@ export class EndGameScene extends Phaser.Scene {
             this.sound.play('sfx_click');
             this.clearDimBackground();
             this.stopConfetti();
+            // ✅ Gửi COMPLETE cho Game Hub
+            const host = (window as any).irukaHost;
+            const state = (window as any).irukaGameState || {};
+
+            if (host && typeof host.complete === 'function') {
+                const timeMs = state.startTime
+                    ? Date.now() - state.startTime
+                    : 0;
+                const score = state.currentScore || 0;
+
+                host.complete({
+                    score,
+                    timeMs,
+                    extras: {
+                        reason: 'user_exit', // cho hub biết là user tự thoát
+                    },
+                });
+            } else {
+                // Fallback: nếu chạy ngoài Game Hub (dev standalone)
+                this.scene.start('LessonSelectScene');
+            }
         });
 
         // Hover effect (nếu cần trên desktop)
