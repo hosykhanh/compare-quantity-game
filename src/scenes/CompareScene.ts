@@ -71,15 +71,14 @@ export class CompareScene extends Phaser.Scene {
     private isBgAActive = true;
 
     private bgByIcon: Record<string, string> = {
-        turtle: 'assets/images/bg/bg_sea.webp',
-        dolphin: 'assets/images/bg/bg_sea.webp',
+        turtle: 'assets/images/bg/bg_sea.jpg',
+        dolphin: 'assets/images/bg/bg_sea.jpg',
 
-        cow: 'assets/images/bg/bg_way.webp',
-        chicken: 'assets/images/bg/bg_farm.webp',
-
-        cat: 'assets/images/bg/bg_home.webp',
-        dog: 'assets/images/bg/bg_home.webp',
-        monkey: 'assets/images/bg/bg_forest.webp',
+        cow: 'assets/images/bg/bg_way.jpg',
+        chicken: 'assets/images/bg/bg_farm.jpg',
+        cat: 'assets/images/bg/bg_home.jpg',
+        dog: 'assets/images/bg/bg_home.jpg',
+        monkey: 'assets/images/bg/bg_forest.jpg',
     };
 
     private currentPromptVoice?: Phaser.Sound.BaseSound;
@@ -114,119 +113,116 @@ export class CompareScene extends Phaser.Scene {
 
     preload() {
         // ---- HÌNH ẢNH ----
-        this.load.image('boy', 'assets/images/characters/boy.webp');
+        this.load.image('boy', 'assets/images/characters/boy.png');
 
-        this.load.image('turtle', 'assets/images/animals/turtle.webp');
-        this.load.image('cat', 'assets/images/animals/cat.webp');
-        this.load.image('dolphin', 'assets/images/animals/dolphin.webp');
-        this.load.image('dog', 'assets/images/animals/dog.webp');
-        this.load.image('chicken', 'assets/images/animals/chicken.webp');
-        this.load.image('cow', 'assets/images/animals/cow.webp');
-        this.load.image('monkey', 'assets/images/animals/monkey.webp');
+        this.load.image('turtle', 'assets/images/animals/turtle.png');
+        this.load.image('cat', 'assets/images/animals/cat.png');
+        this.load.image('dolphin', 'assets/images/animals/dolphin.png');
+        this.load.image('dog', 'assets/images/animals/dog.png');
+        this.load.image('chicken', 'assets/images/animals/chicken.png');
+        this.load.image('cow', 'assets/images/animals/cow.png');
+        this.load.image('monkey', 'assets/images/animals/monkey.png');
 
         // UI
-        this.load.image('question_more', 'assets/images/ui/question_more.webp');
-        this.load.image('question_less', 'assets/images/ui/question_less.webp');
-        this.load.image('panel_bg', 'assets/images/ui/panel_bg.webp');
-        this.load.image(
-            'panel_bg_correct',
-            'assets/images/ui/panel_bg_ok.webp'
-        ); // panel đúng
+        this.load.image('question_more', 'assets/images/ui/question_more.png');
+        this.load.image('question_less', 'assets/images/ui/question_less.png');
+        this.load.image('panel_bg', 'assets/images/ui/panel_bg.png');
+        this.load.image('panel_bg_correct', 'assets/images/ui/panel_bg_ok.png'); // panel đúng
         this.load.image(
             'panel_bg_wrong',
-            'assets/images/ui/panel_bg_wrong.webp'
+            'assets/images/ui/panel_bg_wrong.png'
         ); // panel sai
 
         // ---- ÂM THANH ----
-        this.load.audio('sfx-correct', 'assets/audio/sfx/correct.ogg');
-        this.load.audio('sfx-wrong', 'assets/audio/sfx/wrong.ogg');
-        this.load.audio('sfx-click', 'assets/audio/sfx/click.ogg');
+        this.load.audio('sfx-correct', 'assets/audio/sfx/correct.mp3');
+        this.load.audio('sfx-wrong', 'assets/audio/sfx/wrong.mp3');
+        this.load.audio('sfx-click', 'assets/audio/sfx/click.mp3');
         this.load.audio(
             'correct_answer_1',
-            'assets/audio/sfx/correct_answer_1.ogg'
+            'assets/audio/sfx/correct_answer_1.mp3'
         );
         this.load.audio(
             'correct_answer_2',
-            'assets/audio/sfx/correct_answer_2.ogg'
+            'assets/audio/sfx/correct_answer_2.mp3'
         );
         this.load.audio(
             'correct_answer_3',
-            'assets/audio/sfx/correct_answer_3.ogg'
+            'assets/audio/sfx/correct_answer_3.mp3'
         );
         this.load.audio(
             'correct_answer_4',
-            'assets/audio/sfx/correct_answer_4.ogg'
+            'assets/audio/sfx/correct_answer_4.mp3'
         );
-        this.load.audio('voice_rotate', 'assets/audio/sfx/rotate.ogg');
+        this.load.audio('voice_rotate', 'assets/audio/sfx/rotate.mp3');
 
         // cat
         this.load.audio(
             'prompt_less_cat',
-            'assets/audio/prompt/prompt_less_cat.ogg'
+            'assets/audio/prompt/prompt_less_cat.mp3'
         );
         this.load.audio(
             'prompt_more_cat',
-            'assets/audio/prompt/prompt_more_cat.ogg'
+            'assets/audio/prompt/prompt_more_cat.mp3'
         );
 
         // chicken
         this.load.audio(
             'prompt_less_chicken',
-            'assets/audio/prompt/prompt_less_chicken.ogg'
+            'assets/audio/prompt/prompt_less_chicken.mp3'
         );
         this.load.audio(
             'prompt_more_chicken',
-            'assets/audio/prompt/prompt_more_chicken.ogg'
+            'assets/audio/prompt/prompt_more_chicken.mp3'
         );
 
         // cow
         this.load.audio(
             'prompt_less_cow',
-            'assets/audio/prompt/prompt_less_cow.ogg'
+            'assets/audio/prompt/prompt_less_cow.mp3'
         );
         this.load.audio(
             'prompt_more_cow',
-            'assets/audio/prompt/prompt_more_cow.ogg'
+            'assets/audio/prompt/prompt_more_cow.mp3'
         );
 
         // dog
         this.load.audio(
             'prompt_less_dog',
-            'assets/audio/prompt/prompt_less_dog.ogg'
+            'assets/audio/prompt/prompt_less_dog.mp3'
         );
         this.load.audio(
             'prompt_more_dog',
-            'assets/audio/prompt/prompt_more_dog.ogg'
+            'assets/audio/prompt/prompt_more_dog.mp3'
         );
 
         // dolphin
         this.load.audio(
             'prompt_less_dolphin',
-            'assets/audio/prompt/prompt_less_dolphin.ogg'
+            'assets/audio/prompt/prompt_less_dolphin.mp3'
         );
         this.load.audio(
             'prompt_more_dolphin',
-            'assets/audio/prompt/prompt_more_dolphin.ogg'
+            'assets/audio/prompt/prompt_more_dolphin.mp3'
         );
 
         // monkey
         this.load.audio(
             'prompt_less_monkey',
-            'assets/audio/prompt/prompt_less_monkey.ogg'
+            'assets/audio/prompt/prompt_less_monkey.mp3'
         );
         this.load.audio(
             'prompt_more_monkey',
-            'assets/audio/prompt/prompt_more_monkey.ogg'
+            'assets/audio/prompt/prompt_more_monkey.mp3'
         );
 
         // turtle
         this.load.audio(
             'prompt_less_turtle',
-            'assets/audio/prompt/prompt_less_turtle.ogg'
+            'assets/audio/prompt/prompt_less_turtle.mp3'
         );
         this.load.audio(
             'prompt_more_turtle',
-            'assets/audio/prompt/prompt_more_turtle.ogg'
+            'assets/audio/prompt/prompt_more_turtle.mp3'
         );
 
         // ---- LEVEL DATA (JSON) ----
@@ -243,13 +239,13 @@ export class CompareScene extends Phaser.Scene {
         // set 1 bg khởi tạo cho vui
         if (this.bgLayerA) {
             this.bgLayerA.style.backgroundImage =
-                "url('assets/images/bg/bg_forest.webp')";
+                "url('assets/images/bg/bg_forest.jpg')";
             this.bgLayerA.classList.add('visible');
             this.isBgAActive = true;
         }
         if (this.bgLayerB) {
             this.bgLayerB.style.backgroundImage =
-                "url('assets/images/bg/bg_forest.webp')";
+                "url('assets/images/bg/bg_forest.jpg')";
             this.bgLayerB.classList.remove('visible');
         }
 
@@ -319,7 +315,7 @@ export class CompareScene extends Phaser.Scene {
 
     private setBackgroundForLevel(level: CompareLevel) {
         const icon = level.left.icon;
-        const url = this.bgByIcon[icon] ?? 'assets/images/bg/bg_forest.webp';
+        const url = this.bgByIcon[icon] ?? 'assets/images/bg/bg_forest.jpg';
 
         if (!this.bgLayerA || !this.bgLayerB) return;
 
