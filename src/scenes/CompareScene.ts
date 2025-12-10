@@ -82,8 +82,8 @@ export class CompareScene extends Phaser.Scene {
         monkey: 'assets/images/bg/bg_forest.jpg',
     };
 
-    private currentPromptVoice?: Phaser.Sound.BaseSound;
-    private currentFeedbackVoice?: Phaser.Sound.BaseSound;
+    // private currentPromptVoice?: Phaser.Sound.BaseSound;
+    // private currentFeedbackVoice?: Phaser.Sound.BaseSound;
 
     constructor() {
         super('CompareScene');
