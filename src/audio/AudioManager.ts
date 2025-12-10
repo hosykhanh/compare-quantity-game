@@ -18,7 +18,7 @@ const SOUND_MAP: Record<string, SoundConfig> = {
     'sfx-correct': { src: `${BASE_PATH}sfx/correct.mp3`, volume: 1.0 },
     'sfx-wrong': { src: `${BASE_PATH}sfx/wrong.mp3`, volume: 0.8 },
     'sfx-click': { src: `${BASE_PATH}sfx/click.mp3`, volume: 0.8 },
-    voice_rotate: { src: `${BASE_PATH}sfx/rotate.mp3`, volume: 1.0 },
+    'voice-rotate': { src: `${BASE_PATH}sfx/rotate.mp3`, volume: 0.8 },
 
     // ---- Correct Answers Voice Prompts ----
     correct_answer_1: {
