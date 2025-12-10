@@ -103,14 +103,14 @@ export class CompareScene extends Phaser.Scene {
         return this.getH() * p;
     } // p = 0..1
 
-    private stopAllVoices() {
-        if (this.currentPromptVoice && this.currentPromptVoice.isPlaying) {
-            this.currentPromptVoice.stop();
-        }
-        if (this.currentFeedbackVoice && this.currentFeedbackVoice.isPlaying) {
-            this.currentFeedbackVoice.stop();
-        }
-    }
+    // private stopAllVoices() {
+    //     if (this.currentPromptVoice && this.currentPromptVoice.isPlaying) {
+    //         this.currentPromptVoice.stop();
+    //     }
+    //     if (this.currentFeedbackVoice && this.currentFeedbackVoice.isPlaying) {
+    //         this.currentFeedbackVoice.stop();
+    //     }
+    // }
 
     preload() {
         // ---- HÌNH ẢNH ----
