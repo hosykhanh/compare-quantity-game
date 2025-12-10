@@ -25,11 +25,6 @@ export class EndGameScene extends Phaser.Scene {
         this.load.image('icon', 'assets/images/ui/icon.png');
         this.load.image('btn_reset', 'assets/images/ui/btn_reset.png');
         this.load.image('btn_exit', 'assets/images/ui/btn_exit.png');
-
-        // this.load.audio('complete', 'assets/audio/sfx/complete.mp3');
-        // this.load.audio('fireworks', 'assets/audio/sfx/fireworks.mp3');
-        // this.load.audio('applause', 'assets/audio/sfx/applause.mp3');
-        // this.load.audio('sfx_click', 'assets/audio/sfx/click.mp3');
     }
 
     create() {

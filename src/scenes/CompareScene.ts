@@ -82,9 +82,6 @@ export class CompareScene extends Phaser.Scene {
         monkey: 'assets/images/bg/bg_forest.jpg',
     };
 
-    // private currentPromptVoice?: Phaser.Sound.BaseSound;
-    // private currentFeedbackVoice?: Phaser.Sound.BaseSound;
-
     constructor() {
         super('CompareScene');
     }
@@ -103,146 +100,9 @@ export class CompareScene extends Phaser.Scene {
         return this.getH() * p;
     } // p = 0..1
 
-    // private stopAllVoices() {
-    //     if (this.currentPromptVoice && this.currentPromptVoice.isPlaying) {
-    //         this.currentPromptVoice.stop();
-    //     }
-    //     if (this.currentFeedbackVoice && this.currentFeedbackVoice.isPlaying) {
-    //         this.currentFeedbackVoice.stop();
-    //     }
-    // }
-
-    preload() {
-        // ---- HÌNH ẢNH ----
-        this.load.image('boy', 'assets/images/characters/boy.png');
-
-        this.load.image('turtle', 'assets/images/animals/turtle.png');
-        this.load.image('cat', 'assets/images/animals/cat.png');
-        this.load.image('dolphin', 'assets/images/animals/dolphin.png');
-        this.load.image('dog', 'assets/images/animals/dog.png');
-        this.load.image('chicken', 'assets/images/animals/chicken.png');
-        this.load.image('cow', 'assets/images/animals/cow.png');
-        this.load.image('monkey', 'assets/images/animals/monkey.png');
-
-        // UI
-        this.load.image('question_more', 'assets/images/ui/question_more.png');
-        this.load.image('question_less', 'assets/images/ui/question_less.png');
-        this.load.image('panel_bg', 'assets/images/ui/panel_bg.png');
-        this.load.image('panel_bg_correct', 'assets/images/ui/panel_bg_ok.png'); // panel đúng
-        this.load.image(
-            'panel_bg_wrong',
-            'assets/images/ui/panel_bg_wrong.png'
-        ); // panel sai
-
-        // // ---- ÂM THANH ----
-        // this.load.audio('sfx-correct', 'assets/audio/sfx/correct.mp3');
-        // this.load.audio('sfx-wrong', 'assets/audio/sfx/wrong.mp3');
-        // this.load.audio('sfx-click', 'assets/audio/sfx/click.mp3');
-        // this.load.audio(
-        //     'correct_answer_1',
-        //     'assets/audio/sfx/correct_answer_1.mp3'
-        // );
-        // this.load.audio(
-        //     'correct_answer_2',
-        //     'assets/audio/sfx/correct_answer_2.mp3'
-        // );
-        // this.load.audio(
-        //     'correct_answer_3',
-        //     'assets/audio/sfx/correct_answer_3.mp3'
-        // );
-        // this.load.audio(
-        //     'correct_answer_4',
-        //     'assets/audio/sfx/correct_answer_4.mp3'
-        // );
-        // this.load.audio('voice_rotate', 'assets/audio/sfx/rotate.mp3');
-
-        // // cat
-        // this.load.audio(
-        //     'prompt_less_cat',
-        //     'assets/audio/prompt/prompt_less_cat.mp3'
-        // );
-        // this.load.audio(
-        //     'prompt_more_cat',
-        //     'assets/audio/prompt/prompt_more_cat.mp3'
-        // );
-
-        // // chicken
-        // this.load.audio(
-        //     'prompt_less_chicken',
-        //     'assets/audio/prompt/prompt_less_chicken.mp3'
-        // );
-        // this.load.audio(
-        //     'prompt_more_chicken',
-        //     'assets/audio/prompt/prompt_more_chicken.mp3'
-        // );
-
-        // // cow
-        // this.load.audio(
-        //     'prompt_less_cow',
-        //     'assets/audio/prompt/prompt_less_cow.mp3'
-        // );
-        // this.load.audio(
-        //     'prompt_more_cow',
-        //     'assets/audio/prompt/prompt_more_cow.mp3'
-        // );
-
-        // // dog
-        // this.load.audio(
-        //     'prompt_less_dog',
-        //     'assets/audio/prompt/prompt_less_dog.mp3'
-        // );
-        // this.load.audio(
-        //     'prompt_more_dog',
-        //     'assets/audio/prompt/prompt_more_dog.mp3'
-        // );
-
-        // // dolphin
-        // this.load.audio(
-        //     'prompt_less_dolphin',
-        //     'assets/audio/prompt/prompt_less_dolphin.mp3'
-        // );
-        // this.load.audio(
-        //     'prompt_more_dolphin',
-        //     'assets/audio/prompt/prompt_more_dolphin.mp3'
-        // );
-
-        // // monkey
-        // this.load.audio(
-        //     'prompt_less_monkey',
-        //     'assets/audio/prompt/prompt_less_monkey.mp3'
-        // );
-        // this.load.audio(
-        //     'prompt_more_monkey',
-        //     'assets/audio/prompt/prompt_more_monkey.mp3'
-        // );
-
-        // // turtle
-        // this.load.audio(
-        //     'prompt_less_turtle',
-        //     'assets/audio/prompt/prompt_less_turtle.mp3'
-        // );
-        // this.load.audio(
-        //     'prompt_more_turtle',
-        //     'assets/audio/prompt/prompt_more_turtle.mp3'
-        // );
-
-        // ---- LEVEL DATA (JSON) ----
-        this.load.json('compareLevels', 'assets/data/compareLevels.json');
-    }
-
     create() {
         // Cho phép html-button gọi vào compareScene qua global
         (window as any).compareScene = this;
-
-        // Tải âm thanh bằng AudioManager
-        AudioManager.loadAll();
-        // .then(() => {
-        //     console.log('Tải âm thanh bằng Howler.js hoàn tất.');
-        //     this.scene.start('CompareScene');
-        // })
-        // .catch((error) => {
-        //     console.error('Lỗi khi tải âm thanh Howler.js:', error);
-        // });
 
         this.bgLayerA = document.getElementById('bg-layer-a');
         this.bgLayerB = document.getElementById('bg-layer-b');
@@ -320,8 +180,8 @@ export class CompareScene extends Phaser.Scene {
         this.score = 0;
         this.state = 'idle';
 
-        this.showCurrentLevel();
         showGameButtons();
+        this.showCurrentLevel();
     }
 
     private setBackgroundForLevel(level: CompareLevel) {
@@ -377,14 +237,7 @@ export class CompareScene extends Phaser.Scene {
         (this.rightPanel as any).baseScaleY = this.rightPanel.scaleY;
     }
 
-    // private getPromptKey(icon: string, questionType: 'more' | 'less'): string {
-    //     // icon: cat / dog / cow / ...
-    //     return `prompt_${questionType}_${icon}`;
-    // }
-
     private playPrompt(icon: string, questionType: 'more' | 'less') {
-        // const promptKey = this.getPromptKey(icon, questionType);
-
         // dừng mọi voice đang nói
         AudioManager.stopAll();
 
@@ -653,19 +506,6 @@ export class CompareScene extends Phaser.Scene {
 
         this.handleAnswer(isCorrect, target);
     }
-
-    // playRandomCorrect(sound: Phaser.Sound.BaseSoundManager) {
-    //     const keys = [
-    //         'correct_answer_1',
-    //         'correct_answer_2',
-    //         'correct_answer_3',
-    //         'correct_answer_4',
-    //     ];
-
-    //     const key = keys[Math.floor(Math.random() * keys.length)];
-    //     const sfx = sound.get(key) ?? sound.add(key);
-    //     sfx.play();
-    // }
 
     private playCorrectVoice() {
         // dừng prompt câu hỏi đang nói

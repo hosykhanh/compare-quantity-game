@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { CompareScene } from './scenes/CompareScene';
 import { EndGameScene } from './scenes/EndGameScene';
 import { initRotateOrientation } from './rotateOrientation';
+import PreloadScene from './scenes/PreloadScene';
 
 declare global {
     interface Window {
@@ -15,7 +16,7 @@ const config: Phaser.Types.Core.GameConfig = {
     height: 720,
     parent: 'game-container',
     backgroundColor: '#ffffff',
-    scene: [CompareScene, EndGameScene],
+    scene: [PreloadScene, CompareScene, EndGameScene],
     scale: {
         mode: Phaser.Scale.FIT, // Canvas tự fit vào container
         autoCenter: Phaser.Scale.CENTER_BOTH,
