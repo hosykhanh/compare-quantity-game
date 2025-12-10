@@ -10,6 +10,10 @@ let currentVoiceKey: string | null = null;
 // chỉ attach 1 lần
 let globalBlockListenersAttached = false;
 
+// chống spam voice-rotate
+let lastRotateVoiceTime = 0;
+const ROTATE_VOICE_COOLDOWN = 1500; // ms – 1.5s
+
 // ================== CẤU HÌNH CỐ ĐỊNH (DÙNG CHUNG) ==================
 type RotateConfig = {
     breakpoint: number; // max width để coi là màn nhỏ (mobile)
@@ -57,19 +61,27 @@ export function playVoiceLocked(
     }
 
     // === TRƯỜNG HỢP ĐẶC BIỆT: voice-rotate ===
-    // YÊU CẦU: mỗi lần chạm màn hình phải:
-    //  - Tắt hết âm thanh khác của game
-    //  - Phát lại voice-rotate từ đầu
+    // - Tắt hết âm thanh khác của game
+    // - Có cooldown để tránh spam liên tục
     if (key === 'voice-rotate') {
+        const now = Date.now();
+        if (now - lastRotateVoiceTime < ROTATE_VOICE_COOLDOWN) {
+            // console.warn(
+            //     '[Rotate] Bỏ qua voice-rotate vì cooldown (chống spam)'
+            // );
+            return;
+        }
+        lastRotateVoiceTime = now;
+
         try {
             const am = audioManager as any;
 
-            // Tắt mọi thứ nếu AudioManager có các hàm này
+            // dừng toàn bộ âm thanh game (bgm + sfx + voice)
             if (typeof am.stopAll === 'function') {
-                am.stopAll(); // dừng toàn bộ BGM/SFX/voice (nếu có)
+                am.stopAll();
             }
             if (typeof am.stopAllVoicePrompts === 'function') {
-                am.stopAllVoicePrompts(); // dừng toàn bộ voice hướng dẫn
+                am.stopAllVoicePrompts();
             }
         } catch (e) {
             console.warn('[Rotate] stop all audio error:', e);
@@ -121,13 +133,12 @@ function attachGlobalBlockInputListeners() {
         // Khi overlay đang hiển thị:
         // 1) Chặn event không cho rơi xuống Phaser
         ev.stopPropagation();
-        // @ts-ignore
         if (typeof (ev as any).stopImmediatePropagation === 'function') {
             (ev as any).stopImmediatePropagation();
         }
         ev.preventDefault();
 
-        // 2) MỖI LẦN CHẠM → tắt hết audio + phát lại voice-rotate
+        // 2) Gọi phát voice-rotate (đã có cooldown bên trong playVoiceLocked)
         try {
             playVoiceLocked(null as any, 'voice-rotate');
         } catch (err) {
@@ -217,29 +228,17 @@ function updateRotateHint() {
 
     rotateOverlay.style.display = shouldShow ? 'flex' : 'none';
 
-    // === Khi overlay BẬT ===
+    // === Khi overlay BẬT LÊN LẦN ĐẦU (ví dụ mới vào game ở màn dọc) ===
     if (overlayTurnedOn) {
         try {
-            // dọn hết voice cũ trước khi phát rotate
-            const am = audioManager as any;
-            if (typeof am.stopAll === 'function') {
-                am.stopAll();
-            }
-            if (typeof am.stopAllVoicePrompts === 'function') {
-                am.stopAllVoicePrompts();
-            }
-        } catch (e) {
-            console.warn('[Rotate] stopAll on overlay open error:', e);
-        }
-
-        try {
+            // Gọi voice-rotate ngay (bên trong đã có cooldown + stopAll)
             playVoiceLocked(null as any, 'voice-rotate');
         } catch (e) {
-            console.warn('[Rotate] play voice-rotate error:', e);
+            console.warn('[Rotate] auto play voice-rotate error:', e);
         }
     }
 
-    // === Khi overlay TẮT ===
+    // === Khi overlay TẮT (xoay ngang lại) ===
     if (overlayTurnedOff) {
         if (currentVoiceKey === 'voice-rotate') {
             audioManager.stop('voice-rotate');
