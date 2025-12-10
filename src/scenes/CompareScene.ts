@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { showGameButtons } from '../main';
+import AudioManager from '../audio/AudioManager';
 
 // ====== Định nghĩa type level ======
 
@@ -133,97 +134,97 @@ export class CompareScene extends Phaser.Scene {
             'assets/images/ui/panel_bg_wrong.png'
         ); // panel sai
 
-        // ---- ÂM THANH ----
-        this.load.audio('sfx-correct', 'assets/audio/sfx/correct.mp3');
-        this.load.audio('sfx-wrong', 'assets/audio/sfx/wrong.mp3');
-        this.load.audio('sfx-click', 'assets/audio/sfx/click.mp3');
-        this.load.audio(
-            'correct_answer_1',
-            'assets/audio/sfx/correct_answer_1.mp3'
-        );
-        this.load.audio(
-            'correct_answer_2',
-            'assets/audio/sfx/correct_answer_2.mp3'
-        );
-        this.load.audio(
-            'correct_answer_3',
-            'assets/audio/sfx/correct_answer_3.mp3'
-        );
-        this.load.audio(
-            'correct_answer_4',
-            'assets/audio/sfx/correct_answer_4.mp3'
-        );
-        this.load.audio('voice_rotate', 'assets/audio/sfx/rotate.mp3');
+        // // ---- ÂM THANH ----
+        // this.load.audio('sfx-correct', 'assets/audio/sfx/correct.mp3');
+        // this.load.audio('sfx-wrong', 'assets/audio/sfx/wrong.mp3');
+        // this.load.audio('sfx-click', 'assets/audio/sfx/click.mp3');
+        // this.load.audio(
+        //     'correct_answer_1',
+        //     'assets/audio/sfx/correct_answer_1.mp3'
+        // );
+        // this.load.audio(
+        //     'correct_answer_2',
+        //     'assets/audio/sfx/correct_answer_2.mp3'
+        // );
+        // this.load.audio(
+        //     'correct_answer_3',
+        //     'assets/audio/sfx/correct_answer_3.mp3'
+        // );
+        // this.load.audio(
+        //     'correct_answer_4',
+        //     'assets/audio/sfx/correct_answer_4.mp3'
+        // );
+        // this.load.audio('voice_rotate', 'assets/audio/sfx/rotate.mp3');
 
-        // cat
-        this.load.audio(
-            'prompt_less_cat',
-            'assets/audio/prompt/prompt_less_cat.mp3'
-        );
-        this.load.audio(
-            'prompt_more_cat',
-            'assets/audio/prompt/prompt_more_cat.mp3'
-        );
+        // // cat
+        // this.load.audio(
+        //     'prompt_less_cat',
+        //     'assets/audio/prompt/prompt_less_cat.mp3'
+        // );
+        // this.load.audio(
+        //     'prompt_more_cat',
+        //     'assets/audio/prompt/prompt_more_cat.mp3'
+        // );
 
-        // chicken
-        this.load.audio(
-            'prompt_less_chicken',
-            'assets/audio/prompt/prompt_less_chicken.mp3'
-        );
-        this.load.audio(
-            'prompt_more_chicken',
-            'assets/audio/prompt/prompt_more_chicken.mp3'
-        );
+        // // chicken
+        // this.load.audio(
+        //     'prompt_less_chicken',
+        //     'assets/audio/prompt/prompt_less_chicken.mp3'
+        // );
+        // this.load.audio(
+        //     'prompt_more_chicken',
+        //     'assets/audio/prompt/prompt_more_chicken.mp3'
+        // );
 
-        // cow
-        this.load.audio(
-            'prompt_less_cow',
-            'assets/audio/prompt/prompt_less_cow.mp3'
-        );
-        this.load.audio(
-            'prompt_more_cow',
-            'assets/audio/prompt/prompt_more_cow.mp3'
-        );
+        // // cow
+        // this.load.audio(
+        //     'prompt_less_cow',
+        //     'assets/audio/prompt/prompt_less_cow.mp3'
+        // );
+        // this.load.audio(
+        //     'prompt_more_cow',
+        //     'assets/audio/prompt/prompt_more_cow.mp3'
+        // );
 
-        // dog
-        this.load.audio(
-            'prompt_less_dog',
-            'assets/audio/prompt/prompt_less_dog.mp3'
-        );
-        this.load.audio(
-            'prompt_more_dog',
-            'assets/audio/prompt/prompt_more_dog.mp3'
-        );
+        // // dog
+        // this.load.audio(
+        //     'prompt_less_dog',
+        //     'assets/audio/prompt/prompt_less_dog.mp3'
+        // );
+        // this.load.audio(
+        //     'prompt_more_dog',
+        //     'assets/audio/prompt/prompt_more_dog.mp3'
+        // );
 
-        // dolphin
-        this.load.audio(
-            'prompt_less_dolphin',
-            'assets/audio/prompt/prompt_less_dolphin.mp3'
-        );
-        this.load.audio(
-            'prompt_more_dolphin',
-            'assets/audio/prompt/prompt_more_dolphin.mp3'
-        );
+        // // dolphin
+        // this.load.audio(
+        //     'prompt_less_dolphin',
+        //     'assets/audio/prompt/prompt_less_dolphin.mp3'
+        // );
+        // this.load.audio(
+        //     'prompt_more_dolphin',
+        //     'assets/audio/prompt/prompt_more_dolphin.mp3'
+        // );
 
-        // monkey
-        this.load.audio(
-            'prompt_less_monkey',
-            'assets/audio/prompt/prompt_less_monkey.mp3'
-        );
-        this.load.audio(
-            'prompt_more_monkey',
-            'assets/audio/prompt/prompt_more_monkey.mp3'
-        );
+        // // monkey
+        // this.load.audio(
+        //     'prompt_less_monkey',
+        //     'assets/audio/prompt/prompt_less_monkey.mp3'
+        // );
+        // this.load.audio(
+        //     'prompt_more_monkey',
+        //     'assets/audio/prompt/prompt_more_monkey.mp3'
+        // );
 
-        // turtle
-        this.load.audio(
-            'prompt_less_turtle',
-            'assets/audio/prompt/prompt_less_turtle.mp3'
-        );
-        this.load.audio(
-            'prompt_more_turtle',
-            'assets/audio/prompt/prompt_more_turtle.mp3'
-        );
+        // // turtle
+        // this.load.audio(
+        //     'prompt_less_turtle',
+        //     'assets/audio/prompt/prompt_less_turtle.mp3'
+        // );
+        // this.load.audio(
+        //     'prompt_more_turtle',
+        //     'assets/audio/prompt/prompt_more_turtle.mp3'
+        // );
 
         // ---- LEVEL DATA (JSON) ----
         this.load.json('compareLevels', 'assets/data/compareLevels.json');
@@ -232,6 +233,16 @@ export class CompareScene extends Phaser.Scene {
     create() {
         // Cho phép html-button gọi vào compareScene qua global
         (window as any).compareScene = this;
+
+        // Tải âm thanh bằng AudioManager
+        AudioManager.loadAll();
+        // .then(() => {
+        //     console.log('Tải âm thanh bằng Howler.js hoàn tất.');
+        //     this.scene.start('CompareScene');
+        // })
+        // .catch((error) => {
+        //     console.error('Lỗi khi tải âm thanh Howler.js:', error);
+        // });
 
         this.bgLayerA = document.getElementById('bg-layer-a');
         this.bgLayerB = document.getElementById('bg-layer-b');
@@ -366,22 +377,18 @@ export class CompareScene extends Phaser.Scene {
         (this.rightPanel as any).baseScaleY = this.rightPanel.scaleY;
     }
 
-    private getPromptKey(icon: string, questionType: 'more' | 'less'): string {
-        // icon: cat / dog / cow / ...
-        return `prompt_${questionType}_${icon}`;
-    }
+    // private getPromptKey(icon: string, questionType: 'more' | 'less'): string {
+    //     // icon: cat / dog / cow / ...
+    //     return `prompt_${questionType}_${icon}`;
+    // }
 
     private playPrompt(icon: string, questionType: 'more' | 'less') {
-        const promptKey = this.getPromptKey(icon, questionType);
+        // const promptKey = this.getPromptKey(icon, questionType);
 
         // dừng mọi voice đang nói
-        this.stopAllVoices();
+        AudioManager.stopAll();
 
-        // tạo/nhặt sound cho prompt này
-        const sound = this.sound.get(promptKey) || this.sound.add(promptKey);
-
-        this.currentPromptVoice = sound;
-        sound.play();
+        AudioManager.playPrompt(questionType, icon);
     }
 
     private pickRandomLevels(
@@ -639,7 +646,7 @@ export class CompareScene extends Phaser.Scene {
         if (level.mode !== 'side') return;
 
         this.state = 'checking';
-        this.sound.play('sfx-click');
+        AudioManager.play('sfx-click');
 
         const isCorrect = side === level.correctSide;
         const target = side === 'left' ? this.leftPanel : this.rightPanel;
@@ -647,29 +654,24 @@ export class CompareScene extends Phaser.Scene {
         this.handleAnswer(isCorrect, target);
     }
 
-    playRandomCorrect(sound: Phaser.Sound.BaseSoundManager) {
-        const keys = [
-            'correct_answer_1',
-            'correct_answer_2',
-            'correct_answer_3',
-            'correct_answer_4',
-        ];
+    // playRandomCorrect(sound: Phaser.Sound.BaseSoundManager) {
+    //     const keys = [
+    //         'correct_answer_1',
+    //         'correct_answer_2',
+    //         'correct_answer_3',
+    //         'correct_answer_4',
+    //     ];
 
-        const key = keys[Math.floor(Math.random() * keys.length)];
-        const sfx = sound.get(key) ?? sound.add(key);
-        sfx.play();
-    }
+    //     const key = keys[Math.floor(Math.random() * keys.length)];
+    //     const sfx = sound.get(key) ?? sound.add(key);
+    //     sfx.play();
+    // }
 
     private playCorrectVoice() {
         // dừng prompt câu hỏi đang nói
-        if (this.currentPromptVoice && this.currentPromptVoice.isPlaying) {
-            this.currentPromptVoice.stop();
-        }
-        if (this.currentFeedbackVoice && this.currentFeedbackVoice.isPlaying) {
-            this.currentFeedbackVoice.stop();
-        }
+        AudioManager.stopAllVoicePrompts();
 
-        this.playRandomCorrect(this.sound);
+        AudioManager.playCorrectAnswer();
     }
 
     private handleAnswer(
@@ -699,7 +701,7 @@ export class CompareScene extends Phaser.Scene {
     // ========== FEEDBACK ==========
 
     private playCorrectFeedback(panel: Phaser.GameObjects.Image) {
-        this.sound.play('sfx-correct', { volume: 0.8 });
+        AudioManager.play('sfx-correct');
 
         // lấy danh sách con vật thuộc panel này
         const animals =
@@ -730,7 +732,7 @@ export class CompareScene extends Phaser.Scene {
     }
 
     private playWrongFeedback(panel: Phaser.GameObjects.Image) {
-        this.sound.play('sfx-wrong', { volume: 0.8 });
+        AudioManager.play('sfx-wrong');
 
         // lấy danh sách con vật thuộc panel này
         const animals =
@@ -762,7 +764,7 @@ export class CompareScene extends Phaser.Scene {
     // ========== CHUYỂN LEVEL & KẾT QUẢ ==========
 
     goToNextLevel() {
-        this.stopAllVoices();
+        AudioManager.stopAll();
 
         const afterShrink = () => {
             this.currentLevelIndex += 1;
@@ -794,8 +796,8 @@ export class CompareScene extends Phaser.Scene {
     }
 
     restartGame() {
-        this.stopAllVoices();
-        this.sound.play('sfx-click');
+        AudioManager.stopAll();
+        AudioManager.play('sfx-click');
         // random lại 5 level từ pool
         this.levels = this.pickRandomLevels(
             this.allLevels,

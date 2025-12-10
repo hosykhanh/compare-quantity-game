@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { hideGameButtons } from '../main';
+import AudioManager from '../audio/AudioManager';
 
 export class EndGameScene extends Phaser.Scene {
     private containerEl: HTMLElement | null = null;
@@ -25,10 +26,10 @@ export class EndGameScene extends Phaser.Scene {
         this.load.image('btn_reset', 'assets/images/ui/btn_reset.png');
         this.load.image('btn_exit', 'assets/images/ui/btn_exit.png');
 
-        this.load.audio('complete', 'assets/audio/sfx/complete.mp3');
-        this.load.audio('fireworks', 'assets/audio/sfx/fireworks.mp3');
-        this.load.audio('applause', 'assets/audio/sfx/applause.mp3');
-        this.load.audio('sfx_click', 'assets/audio/sfx/click.mp3');
+        // this.load.audio('complete', 'assets/audio/sfx/complete.mp3');
+        // this.load.audio('fireworks', 'assets/audio/sfx/fireworks.mp3');
+        // this.load.audio('applause', 'assets/audio/sfx/applause.mp3');
+        // this.load.audio('sfx_click', 'assets/audio/sfx/click.mp3');
     }
 
     create() {
@@ -38,7 +39,7 @@ export class EndGameScene extends Phaser.Scene {
         (this.scene.get('CompareScene') as any)?.stopAllVoices?.();
 
         // Phát âm thanh chúc mừng khi vào màn hình
-        this.sound.play('complete');
+        AudioManager.play('complete');
 
         this.containerEl = document.getElementById('game-container');
 
@@ -49,8 +50,8 @@ export class EndGameScene extends Phaser.Scene {
 
         // Phát âm thanh chiến thắng sau 2s
         this.time.delayedCall(2000, () => {
-            this.sound.play('fireworks');
-            this.sound.play('applause');
+            AudioManager.play('fireworks');
+            AudioManager.play('applause');
         });
 
         // ==== Banner kết quả (ảnh nền) ====
@@ -100,12 +101,12 @@ export class EndGameScene extends Phaser.Scene {
 
         replayBtn.on('pointerdown', () => {
             // 1. Tắt toàn bộ âm thanh đang chạy (end game + mọi scene khác)
-            this.sound.stopAll();
+            AudioManager.stopAll();
 
             const compare = this.scene.get('CompareScene') as any;
             compare?.stopAllVoices?.();
 
-            this.sound.play('sfx_click');
+            AudioManager.play('sfx_click');
             this.clearDimBackground();
             this.stopConfetti();
             this.scene.stop('EndGameScene');
@@ -121,7 +122,7 @@ export class EndGameScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true });
 
         exitBtn.on('pointerdown', () => {
-            this.sound.play('sfx_click');
+            AudioManager.play('sfx_click');
             this.clearDimBackground();
             this.stopConfetti();
             // ✅ Gửi COMPLETE cho Game Hub
