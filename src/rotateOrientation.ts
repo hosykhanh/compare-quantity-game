@@ -23,7 +23,7 @@ type RotateConfig = {
 
 const rotateConfig: RotateConfig = {
     breakpoint: 768,
-    message: 'Bé hãy xoay ngang màn hình để chơi nhé 🌈',
+    message: 'Bé Hãy Xoay Ngang Màn Hình Để Chơi Nhé 🌈',
     lockPointer: true,
 };
 
