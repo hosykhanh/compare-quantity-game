@@ -7,6 +7,7 @@ interface SoundConfig {
     src: string;
     loop?: boolean;
     volume?: number;
+    html5?: boolean;
 }
 
 // 2. Đường dẫn gốc (Đảm bảo đường dẫn này đúng trong public folder của Vite)
@@ -92,7 +93,9 @@ class AudioManager {
                     src: [config.src],
                     loop: config.loop || false,
                     volume: config.volume || 1.0,
-                    html5: true, // Cần thiết cho iOS
+                    // ❌ KHÔNG ép html5 cho tất cả
+                    // ✅ Chỉ dùng nếu config.html5 === true
+                    html5: config.html5 === true,
 
                     onload: () => {
                         loadedCount++;
