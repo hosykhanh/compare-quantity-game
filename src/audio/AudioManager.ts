@@ -10,7 +10,7 @@ interface SoundConfig {
 }
 
 // 2. Đường dẫn gốc (Đảm bảo đường dẫn này đúng trong public folder của Vite)
-const BASE_PATH = 'assets/audio/';
+const BASE_PATH = 'assets/audio/'; // Sử dụng '/' cho Vite public folder
 
 // 3. Ánh xạ ID âm thanh (key) và cấu hình chi tiết
 const SOUND_MAP: Record<string, SoundConfig> = {
@@ -38,7 +38,7 @@ const SOUND_MAP: Record<string, SoundConfig> = {
         volume: 1.0,
     },
 
-    // ---- Prompt/Voice Prompts ----
+    // ---- Prompt/Voice Prompts (ví dụ) ----
     prompt_less_cat: { src: `${BASE_PATH}prompt/prompt_less_cat.mp3` },
     prompt_more_cat: { src: `${BASE_PATH}prompt/prompt_more_cat.mp3` },
     prompt_less_chicken: { src: `${BASE_PATH}prompt/prompt_less_chicken.mp3` },
@@ -49,9 +49,7 @@ const SOUND_MAP: Record<string, SoundConfig> = {
     prompt_less_dog: { src: `${BASE_PATH}prompt/prompt_less_dog.mp3` },
     prompt_more_dog: { src: `${BASE_PATH}prompt/prompt_more_dog.mp3` },
     prompt_less_dolphin: { src: `${BASE_PATH}prompt/prompt_less_dolphin.mp3` },
-    prompt_more_dolphin: {
-        src: `${BASE_PATH}prompt/prompt_more_dolphin.mp3`,
-    },
+    prompt_more_dolphin: { src: `${BASE_PATH}prompt/prompt_more_dolphin.mp3` },
     prompt_less_monkey: { src: `${BASE_PATH}prompt/prompt_less_monkey.mp3` },
     prompt_more_monkey: { src: `${BASE_PATH}prompt/prompt_more_monkey.mp3` },
     prompt_less_turtle: { src: `${BASE_PATH}prompt/prompt_less_turtle.mp3` },
@@ -64,9 +62,9 @@ const SOUND_MAP: Record<string, SoundConfig> = {
 
 class AudioManager {
     private sounds: Record<string, Howl> = {};
-    private isLoaded: boolean = false;
+    private isLoaded = false;
 
-    // 👇 Thêm state cho “tap đầu tiên”
+    // trạng thái gesture + queue câu đầu tiên
     private hasUserInteracted = false;
     private queuedFirstSoundId: string | null = null;
 
@@ -74,27 +72,19 @@ class AudioManager {
         // Cấu hình quan trọng cho iOS
         Howler.autoUnlock = true;
         Howler.volume(1.0);
-        (Howler as any).html5PoolSize = 32;
+        (Howler as any).html5PoolSize = 32; // tăng pool cho HTML5 audio
 
         this.setupFirstInteractionListener();
     }
 
+    // Lắng nghe tap đầu tiên để "mở khoá" audio + phát câu đầu tiên nếu có queue
     private setupFirstInteractionListener() {
         const unlock = () => {
             if (this.hasUserInteracted) return;
 
             this.hasUserInteracted = true;
+            this.tryPlayQueuedFirstSound();
 
-            // Nếu có âm thanh đầu tiên bị hoãn → phát ngay sau tap
-            if (
-                this.queuedFirstSoundId &&
-                this.sounds[this.queuedFirstSoundId]
-            ) {
-                this.sounds[this.queuedFirstSoundId].play();
-                this.queuedFirstSoundId = null;
-            }
-
-            // bỏ listener sau khi đã unlock
             window.removeEventListener('pointerdown', unlock, true);
             window.removeEventListener('touchstart', unlock, true);
             window.removeEventListener('click', unlock, true);
@@ -103,6 +93,28 @@ class AudioManager {
         window.addEventListener('pointerdown', unlock, true);
         window.addEventListener('touchstart', unlock, true);
         window.addEventListener('click', unlock, true);
+    }
+
+    // Chỉ khi ĐÃ load âm + ĐÃ có gesture + CÓ id queue thì mới phát câu đầu
+    private tryPlayQueuedFirstSound() {
+        if (
+            !this.hasUserInteracted ||
+            !this.isLoaded ||
+            !this.queuedFirstSoundId
+        ) {
+            return;
+        }
+
+        const id = this.queuedFirstSoundId;
+        this.queuedFirstSoundId = null;
+
+        const sound = this.sounds[id];
+        if (!sound) {
+            console.warn('[AudioManager] Queued sound not found:', id);
+            return;
+        }
+
+        sound.play();
     }
 
     /**
@@ -114,7 +126,10 @@ class AudioManager {
             let loadedCount = 0;
             const total = keys.length;
 
-            if (total === 0) return resolve();
+            if (total === 0) {
+                this.isLoaded = true;
+                return resolve();
+            }
 
             keys.forEach((key) => {
                 const config = SOUND_MAP[key];
@@ -123,12 +138,14 @@ class AudioManager {
                     src: [config.src],
                     loop: config.loop || false,
                     volume: config.volume ?? 1.0,
-                    html5: true, // Cần thiết cho iOS
+                    html5: true, // Cần thiết cho iOS theo yêu cầu của bạn
 
                     onload: () => {
                         loadedCount++;
                         if (loadedCount === total) {
                             this.isLoaded = true;
+                            // khi load xong, thử phát lại câu đầu nếu đã có tap
+                            this.tryPlayQueuedFirstSound();
                             resolve();
                         }
                     },
@@ -145,6 +162,7 @@ class AudioManager {
                         loadedCount++;
                         if (loadedCount === total) {
                             this.isLoaded = true;
+                            this.tryPlayQueuedFirstSound();
                             resolve();
                         }
                     },
@@ -157,28 +175,28 @@ class AudioManager {
      * Phát một âm thanh
      */
     play(id: string): number | undefined {
-        if (!this.isLoaded || !this.sounds[id]) {
-            console.warn(
-                `[AudioManager] Sound ID not found or not loaded: ${id}`
-            );
-            return;
-        }
-
-        // 👇 Nếu user chưa chạm lần nào → hoãn lại âm thanh đầu tiên
-        if (!this.hasUserInteracted) {
-            // Chỉ queue nếu chưa có gì trong hàng đợi
+        // Nếu chưa load xong hoặc chưa có interaction:
+        // -> chỉ queue lại sound đầu tiên, KHÔNG play ngay (tránh bị browser chặn)
+        if (!this.isLoaded || !this.hasUserInteracted) {
             if (!this.queuedFirstSoundId) {
                 this.queuedFirstSoundId = id;
                 console.log(
-                    '[AudioManager] Queue first sound until user interaction:',
+                    '[AudioManager] Queue first sound until ready + user interaction:',
                     id
                 );
             } else {
                 console.log(
-                    '[AudioManager] Already queued first sound, skip extra before interaction:',
+                    '[AudioManager] First sound already queued, skip extra before ready/interaction:',
                     id
                 );
             }
+            return;
+        }
+
+        if (!this.sounds[id]) {
+            console.warn(
+                `[AudioManager] Sound ID not found or not loaded: ${id}`
+            );
             return;
         }
 
@@ -214,11 +232,13 @@ class AudioManager {
         });
     }
 
+    // Hàm tiện ích: Dùng để lấy ngẫu nhiên một trong 4 câu trả lời đúng
     playCorrectAnswer(): void {
         const randomIndex = Math.floor(Math.random() * 4) + 1;
         this.play(`correct_answer_${randomIndex}`);
     }
 
+    // Hàm tiện ích: Dùng để phát lời nhắc (ví dụ: 'prompt_more_cat')
     playPrompt(type: 'less' | 'more', animal: string): void {
         const id = `prompt_${type}_${animal}`;
         this.play(id);
