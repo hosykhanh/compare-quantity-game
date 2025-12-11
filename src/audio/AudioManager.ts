@@ -7,11 +7,10 @@ interface SoundConfig {
     src: string;
     loop?: boolean;
     volume?: number;
-    html5?: boolean;
 }
 
 // 2. Đường dẫn gốc (Đảm bảo đường dẫn này đúng trong public folder của Vite)
-const BASE_PATH = 'assets/audio/'; // Sử dụng '/' cho Vite public folder
+const BASE_PATH = 'assets/audio/';
 
 // 3. Ánh xạ ID âm thanh (key) và cấu hình chi tiết
 const SOUND_MAP: Record<string, SoundConfig> = {
@@ -39,24 +38,24 @@ const SOUND_MAP: Record<string, SoundConfig> = {
         volume: 1.0,
     },
 
-    // ---- Prompt/Voice Prompts (ví dụ) ----
+    // ---- Prompt/Voice Prompts ----
     prompt_less_cat: { src: `${BASE_PATH}prompt/prompt_less_cat.mp3` },
     prompt_more_cat: { src: `${BASE_PATH}prompt/prompt_more_cat.mp3` },
     prompt_less_chicken: { src: `${BASE_PATH}prompt/prompt_less_chicken.mp3` },
     prompt_more_chicken: { src: `${BASE_PATH}prompt/prompt_more_chicken.mp3` },
 
-    // ... Thêm các cặp còn lại vào SOUND_MAP ...
     prompt_less_cow: { src: `${BASE_PATH}prompt/prompt_less_cow.mp3` },
     prompt_more_cow: { src: `${BASE_PATH}prompt/prompt_more_cow.mp3` },
     prompt_less_dog: { src: `${BASE_PATH}prompt/prompt_less_dog.mp3` },
     prompt_more_dog: { src: `${BASE_PATH}prompt/prompt_more_dog.mp3` },
     prompt_less_dolphin: { src: `${BASE_PATH}prompt/prompt_less_dolphin.mp3` },
-    prompt_more_dolphin: { src: `${BASE_PATH}prompt/prompt_more_dolphin.mp3` },
+    prompt_more_dolphin: {
+        src: `${BASE_PATH}prompt/prompt_more_dolphin.mp3`,
+    },
     prompt_less_monkey: { src: `${BASE_PATH}prompt/prompt_less_monkey.mp3` },
     prompt_more_monkey: { src: `${BASE_PATH}prompt/prompt_more_monkey.mp3` },
     prompt_less_turtle: { src: `${BASE_PATH}prompt/prompt_less_turtle.mp3` },
     prompt_more_turtle: { src: `${BASE_PATH}prompt/prompt_more_turtle.mp3` },
-    // v.v.
 
     complete: { src: `${BASE_PATH}sfx/complete.mp3`, volume: 1.0 },
     fireworks: { src: `${BASE_PATH}sfx/fireworks.mp3`, volume: 1.0 },
@@ -64,19 +63,50 @@ const SOUND_MAP: Record<string, SoundConfig> = {
 };
 
 class AudioManager {
-    // Khai báo kiểu dữ liệu cho Map chứa các đối tượng Howl
     private sounds: Record<string, Howl> = {};
     private isLoaded: boolean = false;
+
+    // 👇 Thêm state cho “tap đầu tiên”
+    private hasUserInteracted = false;
+    private queuedFirstSoundId: string | null = null;
 
     constructor() {
         // Cấu hình quan trọng cho iOS
         Howler.autoUnlock = true;
         Howler.volume(1.0);
+        (Howler as any).html5PoolSize = 32;
+
+        this.setupFirstInteractionListener();
+    }
+
+    private setupFirstInteractionListener() {
+        const unlock = () => {
+            if (this.hasUserInteracted) return;
+
+            this.hasUserInteracted = true;
+
+            // Nếu có âm thanh đầu tiên bị hoãn → phát ngay sau tap
+            if (
+                this.queuedFirstSoundId &&
+                this.sounds[this.queuedFirstSoundId]
+            ) {
+                this.sounds[this.queuedFirstSoundId].play();
+                this.queuedFirstSoundId = null;
+            }
+
+            // bỏ listener sau khi đã unlock
+            window.removeEventListener('pointerdown', unlock, true);
+            window.removeEventListener('touchstart', unlock, true);
+            window.removeEventListener('click', unlock, true);
+        };
+
+        window.addEventListener('pointerdown', unlock, true);
+        window.addEventListener('touchstart', unlock, true);
+        window.addEventListener('click', unlock, true);
     }
 
     /**
      * Tải tất cả âm thanh
-     * @returns {Promise<void>}
      */
     loadAll(): Promise<void> {
         return new Promise((resolve) => {
@@ -92,10 +122,8 @@ class AudioManager {
                 this.sounds[key] = new Howl({
                     src: [config.src],
                     loop: config.loop || false,
-                    volume: config.volume || 1.0,
-                    // ❌ KHÔNG ép html5 cho tất cả
-                    // ✅ Chỉ dùng nếu config.html5 === true
-                    html5: config.html5 === true,
+                    volume: config.volume ?? 1.0,
+                    html5: true, // Cần thiết cho iOS
 
                     onload: () => {
                         loadedCount++;
@@ -105,7 +133,6 @@ class AudioManager {
                         }
                     },
                     onloaderror: (id: number, error: unknown) => {
-                        // Chúng ta vẫn có thể chuyển nó sang string để ghi log nếu muốn
                         const errorMessage =
                             error instanceof Error
                                 ? error.message
@@ -128,8 +155,6 @@ class AudioManager {
 
     /**
      * Phát một âm thanh
-     * @param {string} id - ID âm thanh
-     * @returns {number | undefined} - Sound ID của Howler
      */
     play(id: string): number | undefined {
         if (!this.isLoaded || !this.sounds[id]) {
@@ -138,13 +163,28 @@ class AudioManager {
             );
             return;
         }
+
+        // 👇 Nếu user chưa chạm lần nào → hoãn lại âm thanh đầu tiên
+        if (!this.hasUserInteracted) {
+            // Chỉ queue nếu chưa có gì trong hàng đợi
+            if (!this.queuedFirstSoundId) {
+                this.queuedFirstSoundId = id;
+                console.log(
+                    '[AudioManager] Queue first sound until user interaction:',
+                    id
+                );
+            } else {
+                console.log(
+                    '[AudioManager] Already queued first sound, skip extra before interaction:',
+                    id
+                );
+            }
+            return;
+        }
+
         return this.sounds[id].play();
     }
 
-    /**
-     * Dừng một âm thanh
-     * @param {string} id - ID âm thanh
-     */
     stop(id: string): void {
         if (!this.isLoaded || !this.sounds[id]) return;
         this.sounds[id].stop();
@@ -164,7 +204,6 @@ class AudioManager {
      * Dừng TẤT CẢ các Prompt và Feedback để tránh chồng chéo giọng nói.
      */
     stopAllVoicePrompts(): void {
-        // Cần liệt kê tất cả các ID giọng nói/prompt có thể chạy cùng lúc
         const voiceKeys = Object.keys(SOUND_MAP).filter(
             (key) =>
                 key.startsWith('prompt_') || key.startsWith('correct_answer_')
@@ -173,18 +212,13 @@ class AudioManager {
         voiceKeys.forEach((key) => {
             this.stopSound(key);
         });
-
-        // Hoặc bạn có thể dùng: Howler.stop(); để dừng TẤT CẢ âm thanh (thận trọng khi dùng)
     }
 
-    // Hàm tiện ích: Dùng để lấy ngẫu nhiên một trong 4 câu trả lời đúng
     playCorrectAnswer(): void {
-        // Phaser.Math.Between(min, max) -> thay thế bằng hàm Math.random thuần túy hoặc import từ Phaser
         const randomIndex = Math.floor(Math.random() * 4) + 1;
         this.play(`correct_answer_${randomIndex}`);
     }
 
-    // Hàm tiện ích: Dùng để phát lời nhắc (ví dụ: 'prompt_more_cat')
     playPrompt(type: 'less' | 'more', animal: string): void {
         const id = `prompt_${type}_${animal}`;
         this.play(id);
