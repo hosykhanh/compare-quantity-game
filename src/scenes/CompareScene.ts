@@ -86,6 +86,17 @@ export class CompareScene extends Phaser.Scene {
     private pendingPrompt: { icon: string; questionType: QuestionType } | null =
         null;
 
+    // Hàm này sẽ được gọi từ DOM listener
+    public unlockFirstPrompt() {
+        this.hasAudioUnlocked = true;
+
+        if (this.pendingPrompt) {
+            const { icon, questionType } = this.pendingPrompt;
+            this.pendingPrompt = null;
+            this.playPrompt(icon, questionType);
+        }
+    }
+
     constructor() {
         super('CompareScene');
     }
@@ -185,17 +196,6 @@ export class CompareScene extends Phaser.Scene {
         this.state = 'idle';
 
         showGameButtons();
-
-        // 🔑 Cú chạm đầu tiên trong scene sẽ unlock audio + phát câu hỏi đầu
-        this.input.once('pointerup', () => {
-            this.hasAudioUnlocked = true;
-
-            if (this.pendingPrompt) {
-                const { icon, questionType } = this.pendingPrompt;
-                this.pendingPrompt = null;
-                this.playPrompt(icon, questionType);
-            }
-        });
         this.showCurrentLevel();
     }
 

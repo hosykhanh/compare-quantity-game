@@ -30,6 +30,30 @@ const config: Phaser.Types.Core.GameConfig = {
 
 const game = new Phaser.Game(config);
 
+let firstTapHandled = false;
+
+const container = document.getElementById('game-container');
+if (container) {
+    container.addEventListener(
+        'pointerup',
+        () => {
+            if (firstTapHandled) return;
+            firstTapHandled = true;
+
+            // đây là gesture thật trên game-container
+            // 1) đánh dấu đã unlock audio
+            const compareScene = game.scene.getScene('CompareScene') as any;
+            if (
+                compareScene &&
+                typeof compareScene.unlockFirstPrompt === 'function'
+            ) {
+                compareScene.unlockFirstPrompt();
+            }
+        },
+        { once: true, passive: true }
+    );
+}
+
 function resizeGame() {
     const gameDiv = document.getElementById('game-container');
 
