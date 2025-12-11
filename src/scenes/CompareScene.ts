@@ -82,6 +82,10 @@ export class CompareScene extends Phaser.Scene {
         monkey: 'assets/images/bg/bg_forest.jpg',
     };
 
+    private hasAudioUnlocked = false;
+    private pendingPrompt: { icon: string; questionType: QuestionType } | null =
+        null;
+
     constructor() {
         super('CompareScene');
     }
@@ -181,6 +185,17 @@ export class CompareScene extends Phaser.Scene {
         this.state = 'idle';
 
         showGameButtons();
+
+        // 🔑 Cú chạm đầu tiên trong scene sẽ unlock audio + phát câu hỏi đầu
+        this.input.once('pointerup', () => {
+            this.hasAudioUnlocked = true;
+
+            if (this.pendingPrompt) {
+                const { icon, questionType } = this.pendingPrompt;
+                this.pendingPrompt = null;
+                this.playPrompt(icon, questionType);
+            }
+        });
         this.showCurrentLevel();
     }
 
@@ -296,7 +311,12 @@ export class CompareScene extends Phaser.Scene {
             }
 
             // phát đúng file theo con vật
-            this.playPrompt(icon, questionType);
+            // 🔊 LẦN ĐẦU: chỉ lưu lại, đợi tap; CÁC LẦN SAU: phát luôn
+            if (this.hasAudioUnlocked) {
+                this.playPrompt(icon, questionType);
+            } else {
+                this.pendingPrompt = { icon, questionType };
+            }
         }
 
         // Vẽ con vật
